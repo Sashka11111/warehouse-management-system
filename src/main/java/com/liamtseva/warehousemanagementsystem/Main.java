@@ -1,0 +1,59 @@
+package com.liamtseva.warehousemanagementsystem;
+
+import atlantafx.base.theme.PrimerLight;
+import com.liamtseva.warehousemanagementsystem.persistence.connection.DatabaseConnection;
+import javafx.application.Application;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.image.Image;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
+
+public class Main extends Application {
+
+    private static DatabaseConnection databaseConnection;
+
+    @Override
+    public void start(Stage primaryStage) throws Exception {
+        Application.setUserAgentStylesheet(new PrimerLight().getUserAgentStylesheet());
+
+        try {
+            primaryStage.getIcons().add(new Image(getClass().getResourceAsStream("/data/icon.png")));
+        } catch (Exception e) {
+        }
+
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/authorization.fxml"));
+        Parent root = loader.load();
+
+        primaryStage.initStyle(StageStyle.UNDECORATED);
+        primaryStage.setResizable(false);
+        primaryStage.setScene(new Scene(root, 700, 550));
+        primaryStage.setTitle("Warehouse Management System");
+        primaryStage.show();
+    }
+
+    @Override
+    public void stop() throws Exception {
+        super.stop();
+        if (databaseConnection != null) {
+            databaseConnection.closePool();
+        }
+    }
+
+    public static void main(String[] args) {
+        System.setProperty("file.encoding", "UTF-8");
+
+        databaseConnection = DatabaseConnection.getInstance();
+        try {
+            databaseConnection.initializeDataSource();
+            launch(args);
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (databaseConnection != null) {
+                databaseConnection.closePool();
+            }
+        }
+    }
+}

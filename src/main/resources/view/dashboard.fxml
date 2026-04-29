@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane prefHeight="762.0" prefWidth="1000.0" styleClass="dashboard-root" stylesheets="@../design/style.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.liamtseva.warehousemanagementsystem.presentation.controller.DashboardController">
+  <children>
+    <Label layoutX="30.0" layoutY="30.0" styleClass="dashboard-title" text="Панель керування">
+    </Label>
+
+    <HBox layoutX="30.0" layoutY="100.0" spacing="30.0">
+      <children>
+        <VBox prefHeight="150.0" prefWidth="210.0" styleClass="stat-card">
+          <children>
+            <Label styleClass="stat-label" text="Склади">
+            </Label>
+            <Label fx:id="totalWarehousesLabel" styleClass="stat-value" text="0">
+            </Label>
+          </children>
+        </VBox>
+
+        <VBox prefHeight="150.0" prefWidth="210.0" styleClass="stat-card">
+          <children>
+            <Label styleClass="stat-label" text="Товари">
+            </Label>
+            <Label fx:id="totalProductsLabel" styleClass="stat-value" text="0">
+            </Label>
+          </children>
+        </VBox>
+
+        <VBox prefHeight="150.0" prefWidth="210.0" styleClass="stat-card">
+          <children>
+            <Label styleClass="stat-label" text="Замовлення">
+            </Label>
+            <Label fx:id="totalOrdersLabel" styleClass="stat-value" text="0">
+            </Label>
+          </children>
+        </VBox>
+
+        <VBox prefHeight="150.0" prefWidth="210.0" styleClass="stat-card">
+          <children>
+            <Label styleClass="stat-label" text="Постачальники">
+            </Label>
+            <Label fx:id="totalSuppliersLabel" styleClass="stat-value" text="0">
+            </Label>
+          </children>
+        </VBox>
+      </children>
+    </HBox>
+
+    <AnchorPane layoutX="30.0" layoutY="300.0" prefHeight="430.0" prefWidth="940.0" styleClass="table-card">
+         <children>
+            <Label layoutX="25.0" layoutY="20.0" styleClass="table-title" text="Останні замовлення">
+            </Label>
+            <TableView fx:id="recentOrdersTable" layoutX="25.0" layoutY="60.0" prefHeight="345.0" prefWidth="890.0" styleClass="orders-table" stylesheets="@../design/style.css">
+              <columns>
+                <TableColumn fx:id="orderNumColumn" prefWidth="180.0" text="Номер замовлення" />
+                <TableColumn fx:id="orderDateColumn" prefWidth="200.0" text="Дата створення" />
+                <TableColumn fx:id="orderTypeColumn" prefWidth="150.0" text="Тип" />
+                <TableColumn fx:id="orderStatusColumn" prefWidth="150.0" text="Статус" />
+                <TableColumn fx:id="orderAmountColumn" prefWidth="205.0" text="Сума" />
+              </columns>
+            </TableView>
+         </children>
+    </AnchorPane>
+  </children>
+</AnchorPane>
+

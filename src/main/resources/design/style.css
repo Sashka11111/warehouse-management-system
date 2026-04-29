@@ -1,0 +1,358 @@
+.root {
+  -fx-font-family: "Georgia";
+}
+
+.side-btn {
+  -fx-background-color: #2f3479;
+  -fx-background-radius: 24px;
+  -fx-alignment: CENTER;
+  -fx-cursor: hand;
+  -fx-padding: 0 10px 0 10px;
+}
+
+.side-btn:hover {
+  -fx-background-color: #3f46a1;
+}
+
+.textField {
+  -fx-background-color: transparent;
+  -fx-border-color: #2f3479;
+  -fx-border-radius: 24px;
+  -fx-padding: 0 10px 0 10px;
+}
+
+.close-button {
+  -fx-background-color: transparent;
+  -fx-cursor: hand;
+}
+
+.close-button:hover {
+  -fx-background-color: #e74c3c;
+  -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 10, 0.2, 0, 2);
+}
+
+.minimize-button {
+  -fx-background-color: transparent;
+  -fx-cursor: hand;
+}
+
+.minimize-button:hover {
+  -fx-background-color: rgba(255, 255, 255, 0.2);
+}
+
+.menu-button {
+  -fx-background-color: transparent;
+  -fx-alignment: CENTER_LEFT;
+  -fx-padding: 0 10px 0 20px;
+  -fx-font-size: 14px;
+  -fx-cursor: hand;
+  -fx-text-fill: white;
+}
+
+.menu-button:hover {
+    -fx-background-color: rgba(255, 255, 255, 0.1);
+}
+
+
+.search {
+  -fx-background-color: transparent;
+  -fx-border-color: #2f3479;
+  -fx-border-width: 0px 0px .4px 0px;
+}
+
+.order-pane {
+  -fx-border-color: #e0e0e0;
+  -fx-border-width: 1;
+  -fx-background-radius: 10;
+  -fx-border-radius: 10;
+  -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 10, 0.2, 0, 2);
+  -fx-padding: 10;
+}
+
+/* Стилі для таблиць */
+.orders-table {
+  -fx-border-color: #e0e0e0;
+  -fx-border-width: 1px;
+  -fx-font-size: 14px;
+  -fx-font-family: "Arial";
+}
+
+/* Стилі для верхньої частини таблиці (заголовків колонок) */
+.orders-table .column-header-background {
+  -fx-background-color: #2f3479;
+  -fx-border-color: #e0e0e0;
+  -fx-border-width: 0 0 1px 0;
+}
+
+/* Стилі для тексту заголовків колонок */
+.orders-table .column-header .label {
+  -fx-font-weight: bold;
+  -fx-alignment: CENTER;
+  -fx-text-fill: white;
+}
+
+/* Стилі для рядків */
+.orders-table .table-row-cell {
+  -fx-border-color: #e0e0e0;
+  -fx-border-width: 0 0 1px 0;
+  -fx-alignment: CENTER;
+}
+
+/* Стилі для рядків при наведенні */
+.orders-table .table-row-cell:hover {
+  -fx-background-color: #f0f0f0;
+}
+
+/* Стилі для виділеного рядка */
+.orders-table .table-row-cell:selected {
+  -fx-background-color: #3f46a1;
+  -fx-text-fill: #ffffff;
+}
+
+/* Стилі для тексту в комірках */
+.orders-table .table-cell {
+  -fx-alignment: CENTER;
+}
+
+/* Ефект при наведенні на кнопку "Деталі" */
+.orders-table .details-button {
+  -fx-background-color: #2980b9;
+  -fx-background-radius: 12px;
+  -fx-font-size: 11px;
+  -fx-cursor: hand;
+  -fx-min-width: 80px;
+  -fx-alignment: CENTER;
+  -fx-text-fill: white;
+}
+
+/* Стилі для кнопки "Скасувати" або "Видалити" */
+.orders-table .cancel-button {
+  -fx-background-color: #e74c3c;
+  -fx-background-radius: 12px;
+  -fx-font-size: 11px;
+  -fx-cursor: hand;
+  -fx-min-width: 80px;
+  -fx-alignment: CENTER;
+  -fx-text-fill: white;
+}
+
+.orders-table .buttonBox {
+  -fx-alignment: CENTER;
+}
+
+.orders-table .cancel-button:hover {
+  -fx-background-color: #c0392b;
+}
+
+.order-details-pane {
+  -fx-background-radius: 10;
+  -fx-border-radius: 10;
+  -fx-border-color: #e0e0e0;
+  -fx-border-width: 1;
+  -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 10, 0.2, 0, 2);
+  -fx-padding: 20;
+  -fx-alignment: CENTER_LEFT;
+}
+
+/* Стилі для текстових міток (Label) */
+.order-details-pane .label {
+  -fx-font-size: 14px;
+  -fx-alignment: CENTER_LEFT;
+}
+
+/* Стилі для мітки "Товари:" */
+.order-details-pane .label.items-label {
+  -fx-font-weight: bold;
+  -fx-text-fill: #2f3479;
+}
+
+/* Стилі для текстової області (TextArea) */
+.order-details-pane .text-area {
+  -fx-background-color: #f9f9f9;
+  -fx-border-color: #e0e0e0;
+  -fx-border-width: 1;
+  -fx-border-radius: 5;
+  -fx-font-family: "Arial";
+  -fx-font-size: 13px;
+  -fx-text-fill: #333333;
+  -fx-padding: 10;
+}
+
+/* Стилі для кнопки "Закрити" */
+.order-details-pane .close-button {
+  -fx-background-color: #2f3479;
+  -fx-background-radius: 12px;
+  -fx-text-fill: #ffffff;
+  -fx-font-size: 12px;
+  -fx-font-family: "Arial";
+  -fx-cursor: hand;
+  -fx-min-width: 100px;
+  -fx-alignment: CENTER;
+}
+
+.order-details-pane .close-button:hover {
+  -fx-background-color: #3f46a1;
+  -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 10, 0.2, 0, 2);
+}
+
+.alert-ok-button {
+    -fx-background-color: #2f3479;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-cursor: hand;
+    -fx-background-radius: 5;
+}
+
+.alert-ok-button:hover {
+    -fx-background-color: #3f46a1;
+}
+
+/* --- Common Form Styles --- */
+.form-container {
+    -fx-background-color: transparent;
+    -fx-border-color: #2f3479;
+    -fx-border-radius: 8;
+    -fx-border-width: 1;
+}
+
+.dark-theme .form-container {
+    -fx-border-color: #4a5568;
+}
+
+.field-label {
+    -fx-font-family: "Georgia";
+    -fx-font-size: 14px;
+    -fx-text-fill: #2d3748;
+}
+
+.dark-theme .field-label {
+    -fx-text-fill: #e2e8f0;
+}
+
+.field-label-large {
+    -fx-font-family: "Georgia";
+    -fx-font-size: 16px;
+    -fx-text-fill: #2d3748;
+}
+
+.dark-theme .field-label-large {
+    -fx-text-fill: #e2e8f0;
+}
+
+.search-container {
+    -fx-background-radius: 40;
+    -fx-padding: 4;
+    -fx-border-color: #2f3479;
+    -fx-border-radius: 40;
+}
+
+.dark-theme .search-container {
+    -fx-border-color: #4a5568;
+}
+
+.search-button {
+    -fx-background-color: #2f3479;
+    -fx-background-radius: 20;
+}
+
+.dark-theme .search-button {
+    -fx-background-color: #4c51bf;
+}
+
+/* --- Dashboard Premium Styles --- */
+.dashboard-root {
+    -fx-background-color: #f8fafc;
+}
+
+.dark-theme .dashboard-root {
+    -fx-background-color: #1a202c;
+}
+
+.dashboard-title {
+    -fx-font-family: "Georgia";
+    -fx-font-weight: bold;
+    -fx-font-size: 28px;
+    -fx-text-fill: #2f3479;
+}
+
+.dark-theme .dashboard-title {
+    -fx-text-fill: #edf2f7;
+}
+
+.stat-card {
+    -fx-background-color: white;
+    -fx-background-radius: 15px;
+    -fx-padding: 20px;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 10, 0, 0, 4);
+}
+
+.dark-theme .stat-card {
+    -fx-background-color: #2d3748;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 10, 0, 0, 4);
+}
+
+.stat-label {
+    -fx-font-family: "Georgia";
+    -fx-font-size: 14px;
+    -fx-text-fill: #718096;
+}
+
+.dark-theme .stat-label {
+    -fx-text-fill: #a0aec0;
+}
+
+.stat-value {
+    -fx-font-size: 32px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #2f3479;
+}
+
+.dark-theme .stat-value {
+    -fx-text-fill: #6366f1;
+}
+
+
+
+.table-card {
+    -fx-background-color: white;
+    -fx-background-radius: 20px;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.05), 15, 0, 0, 10);
+}
+
+.dark-theme .table-card {
+    -fx-background-color: #2d3748;
+}
+
+.table-title {
+    -fx-font-family: "Georgia";
+    -fx-font-weight: bold;
+    -fx-font-size: 20px;
+    -fx-text-fill: #2f3479;
+}
+
+.dark-theme .table-title {
+    -fx-text-fill: #f7fafc;
+}
+
+/* Theme-aware TableView Overrides */
+.dark-theme .orders-table {
+    -fx-border-color: #4a5568;
+    -fx-background-color: transparent;
+}
+
+.dark-theme .orders-table .column-header-background {
+    -fx-background-color: #1a202c;
+}
+
+.dark-theme .orders-table .table-row-cell {
+    -fx-border-color: #4a5568;
+    -fx-text-fill: #e2e8f0;
+}
+
+.dark-theme .orders-table .table-row-cell:hover {
+    -fx-background-color: #3d465c;
+}
+
+.dark-theme .orders-table .table-row-cell:selected {
+    -fx-background-color: #4c51bf;
+}

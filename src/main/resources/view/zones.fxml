@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+
+<AnchorPane prefHeight="762.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.liamtseva.warehousemanagementsystem.presentation.controller.ZoneController">
+  <children>
+    <AnchorPane layoutX="14.0" layoutY="14.0" prefHeight="200.0" prefWidth="972.0" styleClass="form-container" stylesheets="@../design/style.css">
+      <children>
+        <Label layoutX="20.0" layoutY="25.0" styleClass="field-label" text="Склад:" />
+        <Label layoutX="20.0" layoutY="80.0" styleClass="field-label" text="Назва зони:" />
+        <Label layoutX="500.0" layoutY="25.0" styleClass="field-label" text="Тип зони:" />
+
+        <ComboBox fx:id="warehouseComboBox" layoutX="150.0" layoutY="20.0" prefHeight="30.0" prefWidth="250.0" />
+        <TextField fx:id="nameField" layoutX="150.0" layoutY="75.0" prefHeight="30.0" prefWidth="250.0" styleClass="textField" />
+        <ComboBox fx:id="zoneTypeComboBox" layoutX="600.0" layoutY="20.0" prefHeight="30.0" prefWidth="250.0" />
+
+        <Button fx:id="addButton" layoutX="500.0" layoutY="130.0" prefHeight="40.0" prefWidth="110.0" styleClass="side-btn" text="Додати" textFill="WHITE" />
+        <Button fx:id="editButton" layoutX="620.0" layoutY="130.0" prefHeight="40.0" prefWidth="110.0" styleClass="side-btn" text="Редагувати" textFill="WHITE" />
+        <Button fx:id="deleteButton" layoutX="740.0" layoutY="130.0" prefHeight="40.0" prefWidth="110.0" styleClass="side-btn" text="Видалити" textFill="WHITE" />
+        <Button fx:id="clearButton" layoutX="860.0" layoutY="130.0" prefHeight="40.0" prefWidth="100.0" styleClass="side-btn" text="Очистити" textFill="WHITE" />
+      </children>
+    </AnchorPane>
+
+    <HBox layoutX="100.0" layoutY="230.0" prefHeight="45.0" prefWidth="800.0" styleClass="search-container" stylesheets="@../design/style.css">
+      <children>
+        <TextField fx:id="searchField" prefHeight="35.0" prefWidth="750.0" promptText="Пошук зони..." style="-fx-background-color: transparent;" />
+        <Button mnemonicParsing="false" prefHeight="35.0" prefWidth="40.0" styleClass="search-button">
+          <graphic>
+            <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+              <image>
+                <Image url="@../data/search.png" />
+              </image>
+            </ImageView>
+          </graphic>
+        </Button>
+      </children>
+    </HBox>
+
+    <TableView fx:id="zoneTable" layoutX="14.0" layoutY="290.0" prefHeight="450.0" prefWidth="972.0" styleClass="orders-table" stylesheets="@../design/style.css">
+      <columns>
+        <TableColumn fx:id="warehouseColumn" prefWidth="320.0" text="Склад" />
+        <TableColumn fx:id="nameColumn" prefWidth="320.0" text="Назва" />
+        <TableColumn fx:id="typeColumn" prefWidth="320.0" text="Тип" />
+      </columns>
+    </TableView>
+  </children>
+</AnchorPane>
