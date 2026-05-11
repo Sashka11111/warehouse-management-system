@@ -27,9 +27,8 @@ public class Main extends Application {
         Parent root = loader.load();
 
         primaryStage.initStyle(StageStyle.UNDECORATED);
-        primaryStage.setResizable(false);
-        primaryStage.setScene(new Scene(root, 700, 550));
-        primaryStage.setTitle("Warehouse Management System");
+        primaryStage.setScene(new Scene(root, 1000, 690));
+        primaryStage.setTitle("Система керування складом");
         primaryStage.show();
     }
 

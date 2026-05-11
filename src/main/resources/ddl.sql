@@ -3,28 +3,17 @@ CREATE TABLE Users (
     user_id VARCHAR(36) NOT NULL PRIMARY KEY,
     username VARCHAR(50) UNIQUE NOT NULL,
     password VARCHAR(255) NOT NULL,
-    full_name VARCHAR(100),
     role VARCHAR(20) DEFAULT 'OPERATOR' NOT NULL CHECK(role IN ('ADMIN', 'MANAGER', 'OPERATOR')),
     email VARCHAR(100) UNIQUE,
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
-DROP TABLE IF EXISTS Warehouses;
-CREATE TABLE Warehouses (
-    warehouse_id VARCHAR(36) NOT NULL PRIMARY KEY,
-    name VARCHAR(100) NOT NULL,
-    address VARCHAR(255),
-    capacity_sqm REAL,
-    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
-);
 
 DROP TABLE IF EXISTS Zones;
 CREATE TABLE Zones (
     zone_id VARCHAR(36) NOT NULL PRIMARY KEY,
-    warehouse_id VARCHAR(36) NOT NULL,
     name VARCHAR(50) NOT NULL,
-    zone_type VARCHAR(20) CHECK(zone_type IN ('COLD', 'DRY', 'HAZARDOUS', 'GENERAL')),
-    FOREIGN KEY (warehouse_id) REFERENCES Warehouses(warehouse_id) ON DELETE CASCADE
+    zone_type VARCHAR(20) CHECK(zone_type IN ('COLD', 'DRY', 'HAZARDOUS', 'GENERAL'))
 );
 
 DROP TABLE IF EXISTS ProductCategories;
@@ -63,11 +52,11 @@ DROP TABLE IF EXISTS Inventory;
 CREATE TABLE Inventory (
     inventory_id VARCHAR(36) NOT NULL PRIMARY KEY,
     product_id VARCHAR(36) NOT NULL,
-    location_id VARCHAR(36) NOT NULL,
+    zone_id VARCHAR(36) NOT NULL,
     quantity INTEGER NOT NULL CHECK(quantity >= 0),
     last_updated DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (product_id) REFERENCES Products(product_id) ON DELETE CASCADE,
-    FOREIGN KEY (location_id) REFERENCES StorageLocations(location_id) ON DELETE CASCADE
+    FOREIGN KEY (zone_id) REFERENCES Zones(zone_id) ON DELETE CASCADE
 );
 
 DROP TABLE IF EXISTS Orders;

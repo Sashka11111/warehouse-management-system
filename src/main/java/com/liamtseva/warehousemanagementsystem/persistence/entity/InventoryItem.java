@@ -6,7 +6,7 @@ import java.util.UUID;
 public record InventoryItem(
     UUID inventoryId,
     UUID productId,
-    UUID locationId,
+    UUID zoneId,
     Integer quantity,
     LocalDateTime lastUpdated
 ) implements Entity, Comparable<InventoryItem> {

@@ -1,24 +1,54 @@
 .root {
-  -fx-font-family: "Georgia";
+  -fx-font-family: "Segoe UI", Arial, sans-serif;
 }
 
 .side-btn {
-  -fx-background-color: #2f3479;
-  -fx-background-radius: 24px;
+  -fx-background-color: #ea580c;
+  -fx-background-radius: 8px;
   -fx-alignment: CENTER;
   -fx-cursor: hand;
   -fx-padding: 0 10px 0 10px;
+  -fx-font-family: "Segoe UI";
+  -fx-font-weight: bold;
 }
 
 .side-btn:hover {
-  -fx-background-color: #3f46a1;
+  -fx-background-color: #f97316;
+  -fx-effect: dropshadow(gaussian, rgba(249, 115, 22, 0.3), 8, 0, 0, 2);
+}
+
+.secondary-btn {
+  -fx-background-color: transparent;
+  -fx-border-color: #ea580c;
+  -fx-border-radius: 8px;
+  -fx-border-width: 1.5px;
+  -fx-background-radius: 8px;
+  -fx-alignment: CENTER;
+  -fx-cursor: hand;
+  -fx-padding: 0 10px 0 10px;
+  -fx-text-fill: #ea580c;
+  -fx-font-family: "Segoe UI";
+  -fx-font-weight: bold;
+}
+
+.secondary-btn:hover {
+  -fx-background-color: #f1f5f9;
 }
 
 .textField {
-  -fx-background-color: transparent;
-  -fx-border-color: #2f3479;
-  -fx-border-radius: 24px;
-  -fx-padding: 0 10px 0 10px;
+  -fx-background-color: #f8fafc;
+  -fx-border-color: #cbd5e1;
+  -fx-border-radius: 8px;
+  -fx-background-radius: 8px;
+  -fx-padding: 0 12px 0 12px;
+  -fx-text-fill: #1e293b;
+  -fx-font-family: "Segoe UI";
+}
+
+.textField:focused {
+  -fx-border-color: #ea580c;
+  -fx-background-color: #ffffff;
+  -fx-effect: dropshadow(gaussian, rgba(234, 88, 12, 0.2), 5, 0, 0, 0);
 }
 
 .close-button {
@@ -31,32 +61,156 @@
   -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 10, 0.2, 0, 2);
 }
 
-.minimize-button {
+.close-button .ikonli-font-icon {
+  -fx-icon-color: #475569;
+}
+
+.close-button:hover .ikonli-font-icon {
+  -fx-icon-color: white;
+}
+
+.minimize-button, .maximize-button {
   -fx-background-color: transparent;
   -fx-cursor: hand;
 }
 
-.minimize-button:hover {
-  -fx-background-color: rgba(255, 255, 255, 0.2);
+.minimize-button:hover, .maximize-button:hover {
+  -fx-background-color: rgba(0, 0, 0, 0.08);
+}
+
+.minimize-button .ikonli-font-icon, .maximize-button .ikonli-font-icon {
+  -fx-icon-color: #475569;
+}
+
+.minimize-button:hover .ikonli-font-icon, .maximize-button:hover .ikonli-font-icon {
+  -fx-icon-color: #0f172a;
 }
 
 .menu-button {
   -fx-background-color: transparent;
   -fx-alignment: CENTER_LEFT;
-  -fx-padding: 0 10px 0 20px;
+  -fx-padding: 0 15px 0 20px;
   -fx-font-size: 14px;
+  -fx-font-family: "Segoe UI";
+  -fx-font-weight: 600;
   -fx-cursor: hand;
-  -fx-text-fill: white;
+  -fx-text-fill: #475569; /* Slate-600 */
+  -fx-background-radius: 8px;
 }
 
 .menu-button:hover {
-    -fx-background-color: rgba(255, 255, 255, 0.1);
+    -fx-background-color: #f1f5f9; /* Slate-100 */
+    -fx-text-fill: #0f172a; /* Slate-900 */
+}
+
+.menu-button .ikonli-font-icon {
+  -fx-icon-color: #64748b; /* Slate-500 */
+}
+
+.menu-button:hover .ikonli-font-icon {
+  -fx-icon-color: #ea580c; /* Orange */
+}
+
+.sidebar-active {
+    -fx-background-color: #fff7ed; /* Orange-50 */
+    -fx-text-fill: #ea580c; /* Orange-600 */
+}
+
+.sidebar-active .ikonli-font-icon {
+    -fx-icon-color: #ea580c;
+}
+
+.sidebar-avatar {
+    -fx-fill: #ffffff;
+    -fx-stroke: #ea580c;
+    -fx-stroke-width: 1px;
+}
+
+.status-dot {
+    -fx-fill: #22c55e;
+    -fx-stroke: #ffffff;
+    -fx-stroke-width: 2px;
+}
+
+.header-accent-line {
+    -fx-background-color: #ea580c;
+    -fx-opacity: 0.8;
+}
+
+.user-greeting-label {
+    -fx-font-family: "Segoe UI Light";
+    -fx-font-size: 14px;
+    -fx-text-fill: #64748b;
+    -fx-alignment: center;
+    -fx-text-alignment: center;
+}
+
+.user-name-label {
+    -fx-font-family: "Segoe UI";
+    -fx-font-size: 24px;
+    -fx-font-weight: 900;
+    -fx-text-fill: #0f172a;
+    -fx-alignment: center;
+    -fx-text-alignment: center;
+}
+
+.greeting-glow {
+    -fx-background-color: radial-gradient(focus-angle 0deg, focus-distance 0%, center 50% 50%, radius 100%, rgba(234, 88, 12, 0.05) 0%, transparent 70%);
+}
+
+.status-indicator {
+    -fx-fill: #10b981; /* Emerald-500 */
+    -fx-stroke: #0f172a;
+    -fx-stroke-width: 2px;
+}
+
+.brand-icon-bg {
+    -fx-background-color: rgba(234, 88, 12, 0.15);
+    -fx-background-radius: 12px;
+    -fx-effect: dropshadow(gaussian, rgba(234, 88, 12, 0.3), 15, 0, 0, 0);
+}
+
+.sidebar-search-container {
+    -fx-background-color: rgba(255, 255, 255, 0.04);
+    -fx-background-radius: 12px;
+    -fx-border-color: rgba(255, 255, 255, 0.08);
+    -fx-border-radius: 12px;
+    -fx-border-width: 1px;
+    -fx-padding: 0 10px 0 10px;
+}
+
+.sidebar-search-container:focused-within {
+    -fx-border-color: #ea580c;
+    -fx-background-color: rgba(255, 255, 255, 0.06);
+}
+
+.sidebar-search-field {
+    -fx-background-color: transparent;
+    -fx-text-fill: #ffffff;
+    -fx-prompt-text-fill: #64748b;
+    -fx-font-size: 13px;
+    -fx-padding: 8px 5px 8px 5px;
+}
+
+.brand-title {
+    -fx-font-family: "Segoe UI Bold";
+    -fx-font-size: 22px;
+    -fx-text-fill: #ffffff;
+    -fx-letter-spacing: 1px;
+}
+
+.brand-subtitle {
+    -fx-font-family: "Segoe UI";
+    -fx-font-size: 9px;
+    -fx-text-fill: #cbd5e1; /* Lighter slate */
+    -fx-text-transform: uppercase;
+    -fx-letter-spacing: 2px;
 }
 
 
 .search {
   -fx-background-color: transparent;
-  -fx-border-color: #2f3479;
+  -fx-border-color: #ea580c;
   -fx-border-width: 0px 0px .4px 0px;
 }
 
@@ -71,52 +225,69 @@
 
 /* Стилі для таблиць */
 .orders-table {
-  -fx-border-color: #e0e0e0;
-  -fx-border-width: 1px;
+  -fx-background-color: transparent;
+  -fx-background-insets: 0;
+  -fx-padding: 0;
   -fx-font-size: 14px;
-  -fx-font-family: "Arial";
+  -fx-font-family: "Segoe UI";
+  -fx-border-color: #e2e8f0;
+  -fx-border-width: 1px;
+  -fx-border-radius: 12px;
 }
 
-/* Стилі для верхньої частини таблиці (заголовків колонок) */
 .orders-table .column-header-background {
-  -fx-background-color: #2f3479;
-  -fx-border-color: #e0e0e0;
-  -fx-border-width: 0 0 1px 0;
+  -fx-background-color: #ea580c;
+  -fx-background-radius: 12px 12px 0 0;
+  -fx-padding: 8px 0 8px 0;
 }
 
-/* Стилі для тексту заголовків колонок */
+.orders-table .column-header {
+  -fx-background-color: transparent;
+  -fx-size: 45px;
+}
+
 .orders-table .column-header .label {
   -fx-font-weight: bold;
-  -fx-alignment: CENTER;
   -fx-text-fill: white;
+  -fx-font-size: 13px;
+  -fx-text-transform: uppercase;
+  -fx-letter-spacing: 0.5px;
 }
 
-/* Стилі для рядків */
 .orders-table .table-row-cell {
-  -fx-border-color: #e0e0e0;
+  -fx-background-color: white;
+  -fx-border-color: #f1f5f9;
   -fx-border-width: 0 0 1px 0;
-  -fx-alignment: CENTER;
+  -fx-cell-size: 50px;
 }
 
-/* Стилі для рядків при наведенні */
+.orders-table .table-row-cell:odd {
+  -fx-background-color: #f8fafc;
+}
+
 .orders-table .table-row-cell:hover {
-  -fx-background-color: #f0f0f0;
+  -fx-background-color: #fff7ed;
 }
 
-/* Стилі для виділеного рядка */
 .orders-table .table-row-cell:selected {
-  -fx-background-color: #3f46a1;
-  -fx-text-fill: #ffffff;
+  -fx-background-color: #ffedd5;
+  -fx-text-fill: #ea580c;
 }
 
-/* Стилі для тексту в комірках */
 .orders-table .table-cell {
-  -fx-alignment: CENTER;
+  -fx-padding: 0 15px 0 15px;
+  -fx-alignment: CENTER_LEFT;
+  -fx-text-fill: #1e293b;
+}
+
+.orders-table .table-row-cell:selected .table-cell {
+    -fx-text-fill: #ea580c;
+    -fx-font-weight: bold;
 }
 
 /* Ефект при наведенні на кнопку "Деталі" */
 .orders-table .details-button {
-  -fx-background-color: #2980b9;
+  -fx-background-color: #ea580c;
   -fx-background-radius: 12px;
   -fx-font-size: 11px;
   -fx-cursor: hand;
@@ -163,7 +334,7 @@
 /* Стилі для мітки "Товари:" */
 .order-details-pane .label.items-label {
   -fx-font-weight: bold;
-  -fx-text-fill: #2f3479;
+  -fx-text-fill: #ea580c;
 }
 
 /* Стилі для текстової області (TextArea) */
@@ -180,7 +351,7 @@
 
 /* Стилі для кнопки "Закрити" */
 .order-details-pane .close-button {
-  -fx-background-color: #2f3479;
+  -fx-background-color: #ea580c;
   -fx-background-radius: 12px;
   -fx-text-fill: #ffffff;
   -fx-font-size: 12px;
@@ -191,12 +362,12 @@
 }
 
 .order-details-pane .close-button:hover {
-  -fx-background-color: #3f46a1;
+  -fx-background-color: #f97316;
   -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 10, 0.2, 0, 2);
 }
 
 .alert-ok-button {
-    -fx-background-color: #2f3479;
+    -fx-background-color: #ea580c;
     -fx-text-fill: white;
     -fx-font-weight: bold;
     -fx-cursor: hand;
@@ -204,13 +375,13 @@
 }
 
 .alert-ok-button:hover {
-    -fx-background-color: #3f46a1;
+    -fx-background-color: #f97316;
 }
 
 /* --- Common Form Styles --- */
 .form-container {
     -fx-background-color: transparent;
-    -fx-border-color: #2f3479;
+    -fx-border-color: #ea580c;
     -fx-border-radius: 8;
     -fx-border-width: 1;
 }
@@ -242,7 +413,7 @@
 .search-container {
     -fx-background-radius: 40;
     -fx-padding: 4;
-    -fx-border-color: #2f3479;
+    -fx-border-color: #ea580c;
     -fx-border-radius: 40;
 }
 
@@ -251,7 +422,7 @@
 }
 
 .search-button {
-    -fx-background-color: #2f3479;
+    -fx-background-color: #ea580c;
     -fx-background-radius: 20;
 }
 
@@ -272,7 +443,7 @@
     -fx-font-family: "Georgia";
     -fx-font-weight: bold;
     -fx-font-size: 28px;
-    -fx-text-fill: #2f3479;
+    -fx-text-fill: #ea580c;
 }
 
 .dark-theme .dashboard-title {
@@ -304,7 +475,7 @@
 .stat-value {
     -fx-font-size: 32px;
     -fx-font-weight: bold;
-    -fx-text-fill: #2f3479;
+    -fx-text-fill: #ea580c;
 }
 
 .dark-theme .stat-value {
@@ -327,7 +498,7 @@
     -fx-font-family: "Georgia";
     -fx-font-weight: bold;
     -fx-font-size: 20px;
-    -fx-text-fill: #2f3479;
+    -fx-text-fill: #ea580c;
 }
 
 .dark-theme .table-title {
@@ -355,4 +526,69 @@
 
 .dark-theme .orders-table .table-row-cell:selected {
     -fx-background-color: #4c51bf;
+}
+
+/* --- Soft Premium Auth Styles --- */
+.editorial-field-large {
+    -fx-background-color: #f1f5f9;
+    -fx-background-radius: 16px;
+    -fx-padding: 10px 15px 10px 15px;
+    -fx-text-fill: #1e293b;
+    -fx-font-family: "Segoe UI";
+    -fx-font-size: 16px;
+    -fx-border-width: 0;
+}
+
+.editorial-field-large:focused {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #ea580c;
+    -fx-border-radius: 16px;
+    -fx-border-width: 2px;
+    -fx-effect: dropshadow(gaussian, rgba(234, 88, 12, 0.2), 10, 0, 0, 0);
+}
+
+.editorial-primary-btn {
+    -fx-background-color: #ea580c;
+    -fx-background-radius: 16px;
+    -fx-alignment: CENTER;
+    -fx-cursor: hand;
+    -fx-font-family: "Segoe UI";
+}
+
+.editorial-primary-btn:hover {
+    -fx-background-color: #c2410c;
+    -fx-effect: dropshadow(gaussian, rgba(234, 88, 12, 0.4), 15, 0, 0, 5);
+}
+
+.editorial-secondary-btn {
+    -fx-background-color: transparent;
+    -fx-border-color: #ea580c;
+    -fx-border-radius: 16px;
+    -fx-border-width: 2px;
+    -fx-background-radius: 16px;
+    -fx-alignment: CENTER;
+    -fx-cursor: hand;
+    -fx-font-family: "Segoe UI";
+}
+
+.editorial-secondary-btn:hover {
+    -fx-background-color: rgba(234, 88, 12, 0.05);
+}
+
+.section-title {
+    -fx-font-family: "Segoe UI Bold";
+    -fx-font-size: 24px;
+    -fx-text-fill: #0f172a;
+}
+
+.card {
+    -fx-background-color: white;
+    -fx-background-radius: 16px;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.05), 15, 0, 0, 10);
+}
+
+.search-field-container {
+    -fx-background-color: #f1f5f9;
+    -fx-background-radius: 12px;
+    -fx-alignment: CENTER_LEFT;
 }

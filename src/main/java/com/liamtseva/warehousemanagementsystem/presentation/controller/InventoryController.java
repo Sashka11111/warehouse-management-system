@@ -3,13 +3,13 @@ package com.liamtseva.warehousemanagementsystem.presentation.controller;
 import com.liamtseva.warehousemanagementsystem.persistence.connection.DatabaseConnection;
 import com.liamtseva.warehousemanagementsystem.persistence.entity.InventoryItem;
 import com.liamtseva.warehousemanagementsystem.persistence.entity.Product;
-import com.liamtseva.warehousemanagementsystem.persistence.entity.Warehouse;
+import com.liamtseva.warehousemanagementsystem.persistence.entity.Zone;
 import com.liamtseva.warehousemanagementsystem.persistence.repository.contract.InventoryRepository;
 import com.liamtseva.warehousemanagementsystem.persistence.repository.contract.ProductRepository;
-import com.liamtseva.warehousemanagementsystem.persistence.repository.contract.WarehouseRepository;
+import com.liamtseva.warehousemanagementsystem.persistence.repository.contract.ZoneRepository;
 import com.liamtseva.warehousemanagementsystem.persistence.repository.impl.InventoryRepositoryImpl;
 import com.liamtseva.warehousemanagementsystem.persistence.repository.impl.ProductRepositoryImpl;
-import com.liamtseva.warehousemanagementsystem.persistence.repository.impl.WarehouseRepositoryImpl;
+import com.liamtseva.warehousemanagementsystem.persistence.repository.impl.ZoneRepositoryImpl;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -28,7 +28,7 @@ public class InventoryController {
     @FXML
     private ComboBox<Product> productComboBox;
     @FXML
-    private ComboBox<Warehouse> warehouseComboBox;
+    private ComboBox<Zone> zoneComboBox;
     @FXML
     private TextField quantityField;
     @FXML
@@ -38,7 +38,7 @@ public class InventoryController {
     @FXML
     private TableColumn<InventoryItem, String> productColumn;
     @FXML
-    private TableColumn<InventoryItem, String> warehouseColumn;
+    private TableColumn<InventoryItem, String> zoneColumn;
     @FXML
     private TableColumn<InventoryItem, String> quantityColumn;
     @FXML
@@ -52,17 +52,17 @@ public class InventoryController {
 
     private final InventoryRepository inventoryRepository;
     private final ProductRepository productRepository;
-    private final WarehouseRepository warehouseRepository;
+    private final ZoneRepository zoneRepository;
 
     private ObservableList<InventoryItem> inventoryList;
     private Map<UUID, Product> products;
-    private Map<UUID, Warehouse> warehouses;
+    private Map<UUID, Zone> zones;
     private InventoryItem selectedItem;
 
     public InventoryController() {
         this.inventoryRepository = new InventoryRepositoryImpl(DatabaseConnection.getInstance().getDataSource());
         this.productRepository = new ProductRepositoryImpl(DatabaseConnection.getInstance().getDataSource());
-        this.warehouseRepository = new WarehouseRepositoryImpl(DatabaseConnection.getInstance().getDataSource());
+        this.zoneRepository = new ZoneRepositoryImpl(DatabaseConnection.getInstance().getDataSource());
     }
 
     @FXML
@@ -73,9 +73,9 @@ public class InventoryController {
             Product p = products.get(data.getValue().productId());
             return new SimpleStringProperty(p != null ? p.name() : "Unknown");
         });
-        warehouseColumn.setCellValueFactory(data -> {
-            Warehouse w = warehouses.get(data.getValue().locationId());
-            return new SimpleStringProperty(w != null ? w.name() : "Unknown");
+        zoneColumn.setCellValueFactory(data -> {
+            Zone z = zones.get(data.getValue().zoneId());
+            return new SimpleStringProperty(z != null ? z.name() : "Unknown");
         });
         quantityColumn.setCellValueFactory(data -> new SimpleStringProperty(String.valueOf(data.getValue().quantity())));
         dateColumn.setCellValueFactory(data -> {
@@ -97,7 +97,7 @@ public class InventoryController {
             selectedItem = newVal;
             if (newVal != null) {
                 productComboBox.setValue(products.get(newVal.productId()));
-                warehouseComboBox.setValue(warehouses.get(newVal.locationId()));
+                zoneComboBox.setValue(zones.get(newVal.zoneId()));
                 quantityField.setText(String.valueOf(newVal.quantity()));
             }
         });
@@ -109,8 +109,8 @@ public class InventoryController {
 
         products = productRepository.findAll().stream()
                 .collect(Collectors.toMap(Product::productId, p -> p));
-        warehouses = warehouseRepository.findAll().stream()
-                .collect(Collectors.toMap(Warehouse::warehouseId, w -> w));
+        zones = zoneRepository.findAll().stream()
+                .collect(Collectors.toMap(Zone::zoneId, z -> z));
     }
 
     private void setupComboBoxes() {
@@ -120,10 +120,10 @@ public class InventoryController {
             @Override public Product fromString(String string) { return null; }
         });
 
-        warehouseComboBox.setItems(FXCollections.observableArrayList(warehouses.values()));
-        warehouseComboBox.setConverter(new StringConverter<Warehouse>() {
-            @Override public String toString(Warehouse object) { return object == null ? "" : object.name(); }
-            @Override public Warehouse fromString(String string) { return null; }
+        zoneComboBox.setItems(FXCollections.observableArrayList(zones.values()));
+        zoneComboBox.setConverter(new StringConverter<Zone>() {
+            @Override public String toString(Zone object) { return object == null ? "" : object.name(); }
+            @Override public Zone fromString(String string) { return null; }
         });
     }
 
@@ -145,22 +145,22 @@ public class InventoryController {
     private void addOrUpdateInventory() {
         try {
             Product p = productComboBox.getValue();
-            Warehouse w = warehouseComboBox.getValue();
+            Zone z = zoneComboBox.getValue();
             int qty = Integer.parseInt(quantityField.getText().trim());
 
-            if (p == null || w == null) {
-                AlertController.showAlert("Виберіть товар та склад");
+            if (p == null || z == null) {
+                AlertController.showAlert("Виберіть товар та зону");
                 return;
             }
 
-            if (selectedItem != null && selectedItem.productId().equals(p.productId()) && selectedItem.locationId().equals(w.warehouseId())) {
+            if (selectedItem != null && selectedItem.productId().equals(p.productId()) && selectedItem.zoneId().equals(z.zoneId())) {
                 // Оновлення
-                InventoryItem updated = new InventoryItem(selectedItem.inventoryId(), p.productId(), w.warehouseId(), qty, LocalDateTime.now());
+                InventoryItem updated = new InventoryItem(selectedItem.inventoryId(), p.productId(), z.zoneId(), qty, LocalDateTime.now());
                 inventoryRepository.update(updated);
                 AlertController.showInfo("Інвентар оновлено");
             } else {
                 // Новий запис
-                InventoryItem newItem = new InventoryItem(UUID.randomUUID(), p.productId(), w.warehouseId(), qty, LocalDateTime.now());
+                InventoryItem newItem = new InventoryItem(UUID.randomUUID(), p.productId(), z.zoneId(), qty, LocalDateTime.now());
                 inventoryRepository.create(newItem);
                 AlertController.showInfo("Товар додано до інвентарю");
             }
@@ -188,7 +188,7 @@ public class InventoryController {
 
     private void clearFields() {
         productComboBox.setValue(null);
-        warehouseComboBox.setValue(null);
+        zoneComboBox.setValue(null);
         quantityField.clear();
         selectedItem = null;
         inventoryTable.getSelectionModel().clearSelection();

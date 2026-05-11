@@ -15,14 +15,12 @@ public class AlertController {
 
     @FXML
     private Label messageLabel;
-    @FXML
-    private Button closeButton;
+
 
     private Stage stage;
 
     @FXML
     void initialize() {
-        closeButton.setOnAction(event -> stage.close());
     }
 
     @FXML
@@ -45,8 +43,9 @@ public class AlertController {
             AlertController controller = loader.getController();
             Stage stage = new Stage();
             stage.initModality(Modality.APPLICATION_MODAL);
-            stage.initStyle(StageStyle.UNDECORATED);
+            stage.initStyle(StageStyle.TRANSPARENT);
             Scene scene = new Scene(root);
+            scene.setFill(javafx.scene.paint.Color.TRANSPARENT);
             stage.setScene(scene);
             controller.setStage(stage);
             controller.setMessage(message);

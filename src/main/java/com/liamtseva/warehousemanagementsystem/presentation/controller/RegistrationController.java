@@ -27,8 +27,6 @@ public class RegistrationController {
     @FXML
     private Button signUpButton;
 
-    @FXML
-    private Button btnClose;
 
     @FXML
     private TextField loginField;
@@ -47,7 +45,7 @@ public class RegistrationController {
 
     @FXML
     void initialize() {
-        btnClose.setOnAction(event -> System.exit(0));
+
 
         signInButton.setOnAction(event -> switchScene("/view/authorization.fxml"));
 
@@ -96,7 +94,6 @@ public class RegistrationController {
                 UUID.randomUUID(),
                 username,
                 hashedPassword,
-                "", // Повне ім'я (можна додати поле у форму, поки порожньо)
                 UserRole.OPERATOR,
                 email,
                 LocalDateTime.now()

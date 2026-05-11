@@ -21,7 +21,7 @@ public class InventoryValidator {
         if (!qRes.isValid()) errors.addAll(qRes.getErrors());
 
         if (item.productId() == null) errors.add("Необхідно вибрати товар");
-        if (item.locationId() == null) errors.add("Необхідно вибрати локацію");
+        if (item.zoneId() == null) errors.add("Необхідно вибрати зону");
         
         return new ValidationResult(errors.isEmpty(), errors);
     }

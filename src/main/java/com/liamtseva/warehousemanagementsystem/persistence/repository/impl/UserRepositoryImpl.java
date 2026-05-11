@@ -78,19 +78,18 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public User create(User user) {
-        String query = "INSERT INTO Users (user_id, username, password, full_name, role, email, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        String query = "INSERT INTO Users (user_id, username, password, role, email, created_at) VALUES (?, ?, ?, ?, ?, ?)";
         UUID id = user.id() != null ? user.id() : UUID.randomUUID();
         try (Connection connection = dataSource.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setString(1, id.toString());
             preparedStatement.setString(2, user.username());
             preparedStatement.setString(3, user.password());
-            preparedStatement.setString(4, user.fullName());
-            preparedStatement.setString(5, user.role().name());
-            preparedStatement.setString(6, user.email());
-            preparedStatement.setString(7, user.createdAt().format(DATE_TIME_FORMATTER));
+            preparedStatement.setString(4, user.role().name());
+            preparedStatement.setString(5, user.email());
+            preparedStatement.setString(6, user.createdAt().format(DATE_TIME_FORMATTER));
             preparedStatement.executeUpdate();
-            return new User(id, user.username(), user.password(), user.fullName(), user.role(), user.email(), user.createdAt());
+            return new User(id, user.username(), user.password(), user.role(), user.email(), user.createdAt());
         } catch (SQLException e) {
             throw new RuntimeException("Помилка при створенні користувача", e);
         }
@@ -98,15 +97,14 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public void update(User user) throws EntityNotFoundException {
-        String query = "UPDATE Users SET username = ?, password = ?, full_name = ?, role = ?, email = ? WHERE user_id = ?";
+        String query = "UPDATE Users SET username = ?, password = ?, role = ?, email = ? WHERE user_id = ?";
         try (Connection connection = dataSource.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setString(1, user.username());
             preparedStatement.setString(2, user.password());
-            preparedStatement.setString(3, user.fullName());
-            preparedStatement.setString(4, user.role().name());
-            preparedStatement.setString(5, user.email());
-            preparedStatement.setString(6, user.id().toString());
+            preparedStatement.setString(3, user.role().name());
+            preparedStatement.setString(4, user.email());
+            preparedStatement.setString(5, user.id().toString());
             int affectedRows = preparedStatement.executeUpdate();
             if (affectedRows == 0) {
                 throw new EntityNotFoundException("Користувача з ID " + user.id() + " не знайдено");
@@ -147,7 +145,6 @@ public class UserRepositoryImpl implements UserRepository {
             UUID.fromString(resultSet.getString("user_id")),
             resultSet.getString("username"),
             resultSet.getString("password"),
-            resultSet.getString("full_name"),
             UserRole.valueOf(resultSet.getString("role")),
             resultSet.getString("email"),
             createdAt

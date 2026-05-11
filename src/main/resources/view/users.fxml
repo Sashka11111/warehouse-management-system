@@ -16,13 +16,11 @@
     <AnchorPane layoutX="14.0" layoutY="14.0" prefHeight="200.0" prefWidth="972.0" styleClass="form-container" stylesheets="@../design/style.css">
       <children>
         <Label layoutX="20.0" layoutY="20.0" styleClass="field-label" text="Логін:" />
-        <Label layoutX="20.0" layoutY="65.0" styleClass="field-label" text="Повне ім'я:" />
-        <Label layoutX="20.0" layoutY="110.0" styleClass="field-label" text="Email:" />
+        <Label layoutX="20.0" layoutY="65.0" styleClass="field-label" text="Email:" />
         <Label layoutX="500.0" layoutY="20.0" styleClass="field-label" text="Роль:" />
 
         <TextField fx:id="usernameField" layoutX="150.0" layoutY="15.0" prefHeight="30.0" prefWidth="250.0" styleClass="textField" />
-        <TextField fx:id="fullNameField" layoutX="150.0" layoutY="60.0" prefHeight="30.0" prefWidth="250.0" styleClass="textField" />
-        <TextField fx:id="emailField" layoutX="150.0" layoutY="105.0" prefHeight="30.0" prefWidth="250.0" styleClass="textField" />
+        <TextField fx:id="emailField" layoutX="150.0" layoutY="60.0" prefHeight="30.0" prefWidth="250.0" styleClass="textField" />
         
         <ComboBox fx:id="roleComboBox" layoutX="600.0" layoutY="15.0" prefHeight="30.0" prefWidth="250.0" />
 
@@ -50,7 +48,6 @@
     <TableView fx:id="userTable" layoutX="14.0" layoutY="290.0" prefHeight="450.0" prefWidth="972.0" styleClass="orders-table" stylesheets="@../design/style.css">
       <columns>
         <TableColumn fx:id="usernameColumn" prefWidth="200.0" text="Логін" />
-        <TableColumn fx:id="fullNameColumn" prefWidth="250.0" text="Повне ім'я" />
         <TableColumn fx:id="emailColumn" prefWidth="250.0" text="Email" />
         <TableColumn fx:id="roleColumn" prefWidth="150.0" text="Роль" />
         <TableColumn fx:id="dateColumn" prefWidth="120.0" text="Створено" />

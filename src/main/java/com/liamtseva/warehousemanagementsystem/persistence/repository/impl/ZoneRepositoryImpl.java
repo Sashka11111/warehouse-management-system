@@ -38,23 +38,6 @@ public class ZoneRepositoryImpl implements ZoneRepository {
         }
     }
 
-    @Override
-    public List<Zone> findByWarehouseId(UUID warehouseId) {
-        List<Zone> zones = new ArrayList<>();
-        String query = "SELECT * FROM Zones WHERE warehouse_id = ?";
-        try (Connection connection = dataSource.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-            preparedStatement.setString(1, warehouseId.toString());
-            try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                while (resultSet.next()) {
-                    zones.add(mapToZone(resultSet));
-                }
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException("Помилка при отриманні зон для складу", e);
-        }
-        return zones;
-    }
 
     @Override
     public List<Zone> findAll() {
@@ -74,16 +57,15 @@ public class ZoneRepositoryImpl implements ZoneRepository {
 
     @Override
     public Zone create(Zone zone) {
-        String query = "INSERT INTO Zones (zone_id, warehouse_id, name, zone_type) VALUES (?, ?, ?, ?)";
+        String query = "INSERT INTO Zones (zone_id, name, zone_type) VALUES (?, ?, ?)";
         UUID id = zone.zoneId() != null ? zone.zoneId() : UUID.randomUUID();
         try (Connection connection = dataSource.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setString(1, id.toString());
-            preparedStatement.setString(2, zone.warehouseId().toString());
-            preparedStatement.setString(3, zone.name());
-            preparedStatement.setString(4, zone.zoneType() != null ? zone.zoneType().name() : null);
+            preparedStatement.setString(2, zone.name());
+            preparedStatement.setString(3, zone.zoneType() != null ? zone.zoneType().name() : null);
             preparedStatement.executeUpdate();
-            return new Zone(id, zone.warehouseId(), zone.name(), zone.zoneType());
+            return new Zone(id, zone.name(), zone.zoneType());
         } catch (SQLException e) {
             throw new RuntimeException("Помилка при створенні зони", e);
         }
@@ -91,13 +73,12 @@ public class ZoneRepositoryImpl implements ZoneRepository {
 
     @Override
     public void update(Zone zone) throws EntityNotFoundException {
-        String query = "UPDATE Zones SET warehouse_id = ?, name = ?, zone_type = ? WHERE zone_id = ?";
+        String query = "UPDATE Zones SET name = ?, zone_type = ? WHERE zone_id = ?";
         try (Connection connection = dataSource.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-            preparedStatement.setString(1, zone.warehouseId().toString());
-            preparedStatement.setString(2, zone.name());
-            preparedStatement.setString(3, zone.zoneType() != null ? zone.zoneType().name() : null);
-            preparedStatement.setString(4, zone.zoneId().toString());
+            preparedStatement.setString(1, zone.name());
+            preparedStatement.setString(2, zone.zoneType() != null ? zone.zoneType().name() : null);
+            preparedStatement.setString(3, zone.zoneId().toString());
             int affectedRows = preparedStatement.executeUpdate();
             if (affectedRows == 0) {
                 throw new EntityNotFoundException("Зону з ID " + zone.zoneId() + " не знайдено");
@@ -127,7 +108,6 @@ public class ZoneRepositoryImpl implements ZoneRepository {
         ZoneType zoneType = zoneTypeStr != null ? ZoneType.valueOf(zoneTypeStr) : null;
         return new Zone(
             UUID.fromString(resultSet.getString("zone_id")),
-            UUID.fromString(resultSet.getString("warehouse_id")),
             resultSet.getString("name"),
             zoneType
         );

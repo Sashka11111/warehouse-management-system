@@ -19,8 +19,6 @@ public class UserController {
     @FXML
     private TextField usernameField;
     @FXML
-    private TextField fullNameField;
-    @FXML
     private TextField emailField;
     @FXML
     private ComboBox<UserRole> roleComboBox;
@@ -30,8 +28,6 @@ public class UserController {
     private TableView<User> userTable;
     @FXML
     private TableColumn<User, String> usernameColumn;
-    @FXML
-    private TableColumn<User, String> fullNameColumn;
     @FXML
     private TableColumn<User, String> emailColumn;
     @FXML
@@ -56,7 +52,6 @@ public class UserController {
     @FXML
     public void initialize() {
         usernameColumn.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().username()));
-        fullNameColumn.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().fullName()));
         emailColumn.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().email()));
         roleColumn.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().role().toString()));
         dateColumn.setCellValueFactory(data -> {
@@ -80,7 +75,6 @@ public class UserController {
             selectedUser = newVal;
             if (newVal != null) {
                 usernameField.setText(newVal.username());
-                fullNameField.setText(newVal.fullName());
                 emailField.setText(newVal.email());
                 roleComboBox.setValue(newVal.role());
             }
@@ -99,7 +93,7 @@ public class UserController {
         }
         String lowerText = text.toLowerCase();
         List<User> filtered = userList.stream()
-                .filter(u -> u.username().toLowerCase().contains(lowerText) || u.fullName().toLowerCase().contains(lowerText))
+                .filter(u -> u.username().toLowerCase().contains(lowerText) || u.email().toLowerCase().contains(lowerText))
                 .collect(Collectors.toList());
         userTable.setItems(FXCollections.observableArrayList(filtered));
     }
@@ -114,7 +108,6 @@ public class UserController {
                 selectedUser.userId(),
                 usernameField.getText().trim(),
                 selectedUser.password(), // Пароль не змінюємо тут
-                fullNameField.getText().trim(),
                 roleComboBox.getValue(),
                 emailField.getText().trim(),
                 selectedUser.createdAt()
@@ -145,7 +138,6 @@ public class UserController {
 
     private void clearFields() {
         usernameField.clear();
-        fullNameField.clear();
         emailField.clear();
         roleComboBox.setValue(null);
         selectedUser = null;

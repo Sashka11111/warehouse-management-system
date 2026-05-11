@@ -60,19 +60,19 @@ public class InventoryRepositoryImpl implements InventoryRepository {
     }
 
     @Override
-    public List<InventoryItem> findByLocationId(UUID locationId) {
+    public List<InventoryItem> findByZoneId(UUID zoneId) {
         List<InventoryItem> items = new ArrayList<>();
-        String query = "SELECT * FROM Inventory WHERE location_id = ?";
+        String query = "SELECT * FROM Inventory WHERE zone_id = ?";
         try (Connection connection = dataSource.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-            preparedStatement.setString(1, locationId.toString());
+            preparedStatement.setString(1, zoneId.toString());
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 while (resultSet.next()) {
                     items.add(mapToInventory(resultSet));
                 }
             }
         } catch (SQLException e) {
-            throw new RuntimeException("Помилка при отриманні інвентарю за локацією", e);
+            throw new RuntimeException("Помилка при отриманні інвентарю за зоною", e);
         }
         return items;
     }
@@ -95,17 +95,17 @@ public class InventoryRepositoryImpl implements InventoryRepository {
 
     @Override
     public InventoryItem create(InventoryItem item) {
-        String query = "INSERT INTO Inventory (inventory_id, product_id, location_id, quantity, last_updated) VALUES (?, ?, ?, ?, ?)";
+        String query = "INSERT INTO Inventory (inventory_id, product_id, zone_id, quantity, last_updated) VALUES (?, ?, ?, ?, ?)";
         UUID id = item.inventoryId() != null ? item.inventoryId() : UUID.randomUUID();
         try (Connection connection = dataSource.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setString(1, id.toString());
             preparedStatement.setString(2, item.productId().toString());
-            preparedStatement.setString(3, item.locationId().toString());
+            preparedStatement.setString(3, item.zoneId().toString());
             preparedStatement.setInt(4, item.quantity());
             preparedStatement.setString(5, item.lastUpdated().format(DATE_TIME_FORMATTER));
             preparedStatement.executeUpdate();
-            return new InventoryItem(id, item.productId(), item.locationId(), item.quantity(), item.lastUpdated());
+            return new InventoryItem(id, item.productId(), item.zoneId(), item.quantity(), item.lastUpdated());
         } catch (SQLException e) {
             throw new RuntimeException("Помилка при створенні запису інвентарю", e);
         }
@@ -113,11 +113,11 @@ public class InventoryRepositoryImpl implements InventoryRepository {
 
     @Override
     public void update(InventoryItem item) throws EntityNotFoundException {
-        String query = "UPDATE Inventory SET product_id = ?, location_id = ?, quantity = ?, last_updated = ? WHERE inventory_id = ?";
+        String query = "UPDATE Inventory SET product_id = ?, zone_id = ?, quantity = ?, last_updated = ? WHERE inventory_id = ?";
         try (Connection connection = dataSource.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setString(1, item.productId().toString());
-            preparedStatement.setString(2, item.locationId().toString());
+            preparedStatement.setString(2, item.zoneId().toString());
             preparedStatement.setInt(3, item.quantity());
             preparedStatement.setString(4, item.lastUpdated().format(DATE_TIME_FORMATTER));
             preparedStatement.setString(5, item.inventoryId().toString());
@@ -160,7 +160,7 @@ public class InventoryRepositoryImpl implements InventoryRepository {
         return new InventoryItem(
             UUID.fromString(resultSet.getString("inventory_id")),
             UUID.fromString(resultSet.getString("product_id")),
-            UUID.fromString(resultSet.getString("location_id")),
+            UUID.fromString(resultSet.getString("zone_id")),
             resultSet.getInt("quantity"),
             updated
         );

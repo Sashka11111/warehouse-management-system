@@ -5,7 +5,6 @@ import java.util.UUID;
 
 public record Zone(
     UUID zoneId,
-    UUID warehouseId,
     String name,
     ZoneType zoneType
 ) implements Entity, Comparable<Zone> {
@@ -17,8 +16,6 @@ public record Zone(
 
     @Override
     public int compareTo(Zone o) {
-        int warehouseComparison = this.warehouseId.compareTo(o.warehouseId);
-        if (warehouseComparison != 0) return warehouseComparison;
         return this.name.compareTo(o.name);
     }
 }

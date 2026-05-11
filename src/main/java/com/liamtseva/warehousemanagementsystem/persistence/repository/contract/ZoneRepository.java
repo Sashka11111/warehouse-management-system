@@ -8,7 +8,6 @@ import java.util.UUID;
 public interface ZoneRepository {
     List<Zone> findAll();
     Zone findById(UUID id) throws EntityNotFoundException;
-    List<Zone> findByWarehouseId(UUID warehouseId);
     Zone create(Zone zone);
 
     void update(Zone zone) throws EntityNotFoundException;

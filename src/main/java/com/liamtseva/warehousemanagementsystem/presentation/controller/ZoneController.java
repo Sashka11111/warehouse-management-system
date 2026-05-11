@@ -20,6 +20,7 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
@@ -27,8 +28,6 @@ import javafx.util.StringConverter;
 
 public class ZoneController {
 
-    @FXML
-    private ComboBox<Warehouse> warehouseComboBox;
     @FXML
     private TextField nameField;
     @FXML
@@ -46,21 +45,16 @@ public class ZoneController {
     @FXML
     private TableView<Zone> zoneTable;
     @FXML
-    private TableColumn<Zone, String> warehouseColumn;
-    @FXML
     private TableColumn<Zone, String> nameColumn;
     @FXML
     private TableColumn<Zone, String> typeColumn;
 
     private final ZoneRepository repository;
-    private final WarehouseRepository warehouseRepository;
     private final ObservableList<Zone> zoneData = FXCollections.observableArrayList();
-    private Map<UUID, Warehouse> warehouses;
     private Zone selectedZone;
 
     public ZoneController() {
         this.repository = new ZoneRepositoryImpl(DatabaseConnection.getInstance().getDataSource());
-        this.warehouseRepository = new WarehouseRepositoryImpl(DatabaseConnection.getInstance().getDataSource());
     }
 
     @FXML
@@ -72,25 +66,12 @@ public class ZoneController {
     }
 
     private void setupTable() {
-        warehouseColumn.setCellValueFactory(data -> {
-            Warehouse w = warehouses != null ? warehouses.get(data.getValue().warehouseId()) : null;
-            return new SimpleStringProperty(w != null ? w.name() : "Невідомо");
-        });
         nameColumn.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().name()));
         typeColumn.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().zoneType().toString()));
         zoneTable.setItems(zoneData);
     }
 
     private void setupComboBoxes() {
-        refreshWarehouses();
-        warehouseComboBox.setConverter(new StringConverter<Warehouse>() {
-            @Override
-            public String toString(Warehouse warehouse) {
-                return warehouse == null ? "" : warehouse.name();
-            }
-            @Override
-            public Warehouse fromString(String string) { return null; }
-        });
 
         zoneTypeComboBox.setItems(FXCollections.observableArrayList(ZoneType.values()));
         zoneTypeComboBox.setConverter(new StringConverter<ZoneType>() {
@@ -103,11 +84,6 @@ public class ZoneController {
         });
     }
 
-    private void refreshWarehouses() {
-        List<Warehouse> allWarehouses = warehouseRepository.findAll();
-        warehouses = allWarehouses.stream().collect(Collectors.toMap(Warehouse::warehouseId, w -> w));
-        warehouseComboBox.setItems(FXCollections.observableArrayList(allWarehouses));
-    }
 
     private void loadZones() {
         List<Zone> zones = repository.findAll();
@@ -120,7 +96,6 @@ public class ZoneController {
                 selectedZone = newSelection;
                 nameField.setText(newSelection.name());
                 zoneTypeComboBox.setValue(newSelection.zoneType());
-                warehouseComboBox.setValue(warehouses.get(newSelection.warehouseId()));
             }
         });
 
@@ -148,16 +123,9 @@ public class ZoneController {
 
     private void handleAdd() {
         try {
-            Warehouse warehouse = warehouseComboBox.getValue();
+            String name = nameField.getText();
             ZoneType type = zoneTypeComboBox.getValue();
-            String name = nameField.getText().trim();
-
-            if (warehouse == null || type == null || name.isEmpty()) {
-                AlertController.showAlert("Всі поля повинні бути заповнені");
-                return;
-            }
-
-            Zone zone = new Zone(UUID.randomUUID(), warehouse.warehouseId(), name, type);
+            Zone zone = new Zone(UUID.randomUUID(), name, type);
             ValidationResult validation = ZoneValidator.isZoneValid(zone);
             if (!validation.isValid()) {
                 AlertController.showAlert(validation.getErrors().get(0));
@@ -180,16 +148,9 @@ public class ZoneController {
         }
 
         try {
-            Warehouse warehouse = warehouseComboBox.getValue();
+            String name = nameField.getText();
             ZoneType type = zoneTypeComboBox.getValue();
-            String name = nameField.getText().trim();
-
-            if (warehouse == null || type == null || name.isEmpty()) {
-                AlertController.showAlert("Всі поля повинні бути заповнені");
-                return;
-            }
-
-            Zone updated = new Zone(selectedZone.zoneId(), warehouse.warehouseId(), name, type);
+            Zone updated = new Zone(selectedZone.zoneId(), name, type);
             ValidationResult validation = ZoneValidator.isZoneValid(updated);
             if (!validation.isValid()) {
                 AlertController.showAlert(validation.getErrors().get(0));
@@ -223,7 +184,6 @@ public class ZoneController {
 
     private void clearFields() {
         nameField.clear();
-        warehouseComboBox.setValue(null);
         zoneTypeComboBox.setValue(null);
         selectedZone = null;
         zoneTable.getSelectionModel().clearSelection();

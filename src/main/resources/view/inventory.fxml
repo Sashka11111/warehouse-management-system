@@ -16,11 +16,11 @@
     <AnchorPane layoutX="14.0" layoutY="14.0" prefHeight="200.0" prefWidth="972.0" styleClass="form-container" stylesheets="@../design/style.css">
       <children>
         <Label layoutX="20.0" layoutY="20.0" styleClass="field-label" text="Товар:" />
-        <Label layoutX="20.0" layoutY="65.0" styleClass="field-label" text="Склад:" />
+        <Label layoutX="20.0" layoutY="65.0" styleClass="field-label" text="Зона:" />
         <Label layoutX="20.0" layoutY="110.0" styleClass="field-label" text="Кількість:" />
 
         <ComboBox fx:id="productComboBox" layoutX="120.0" layoutY="15.0" prefHeight="30.0" prefWidth="300.0" />
-        <ComboBox fx:id="warehouseComboBox" layoutX="120.0" layoutY="60.0" prefHeight="30.0" prefWidth="300.0" />
+        <ComboBox fx:id="zoneComboBox" layoutX="120.0" layoutY="60.0" prefHeight="30.0" prefWidth="300.0" />
         <TextField fx:id="quantityField" layoutX="120.0" layoutY="105.0" prefHeight="30.0" prefWidth="300.0" styleClass="textField" />
 
         <Button fx:id="addButton" layoutX="500.0" layoutY="110.0" prefHeight="40.0" prefWidth="150.0" styleClass="side-btn" text="Додати/Оновити" textFill="WHITE" />
@@ -47,7 +47,7 @@
     <TableView fx:id="inventoryTable" layoutX="14.0" layoutY="290.0" prefHeight="450.0" prefWidth="972.0" styleClass="orders-table" stylesheets="@../design/style.css">
       <columns>
         <TableColumn fx:id="productColumn" prefWidth="300.0" text="Товар" />
-        <TableColumn fx:id="warehouseColumn" prefWidth="250.0" text="Склад" />
+        <TableColumn fx:id="zoneColumn" prefWidth="250.0" text="Зона" />
         <TableColumn fx:id="quantityColumn" prefWidth="150.0" text="Кількість" />
         <TableColumn fx:id="dateColumn" prefWidth="200.0" text="Останнє оновлення" />
       </columns>

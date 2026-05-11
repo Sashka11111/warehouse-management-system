@@ -8,7 +8,6 @@ public record User(
     UUID userId,
     String username,
     String password,
-    String fullName,
     UserRole role,
     String email,
     LocalDateTime createdAt

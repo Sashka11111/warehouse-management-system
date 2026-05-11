@@ -20,9 +20,6 @@ public class ZoneValidator {
         ValidationResult nameRes = isNameValid(zone.name());
         if (!nameRes.isValid()) errors.addAll(nameRes.getErrors());
 
-        if (zone.warehouseId() == null) {
-            errors.add("Необхідно вибрати склад для зони");
-        }
         return new ValidationResult(errors.isEmpty(), errors);
     }
 }

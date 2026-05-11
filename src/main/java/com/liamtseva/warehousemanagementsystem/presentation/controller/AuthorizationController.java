@@ -34,9 +34,6 @@ public class AuthorizationController {
     @FXML
     private PasswordField passwordField;
 
-    @FXML
-    private Button btnClose;
-
     private final UserRepository userRepository;
 
     public AuthorizationController() {
@@ -45,19 +42,15 @@ public class AuthorizationController {
 
     @FXML
     void initialize() {
-        btnClose.setOnAction(event -> {
-            System.exit(0);
-        });
+
 
         // Перехід до реєстрації
         authSignInButton.setOnAction(event -> {
             try {
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/registration.fxml"));
                 Parent root = loader.load();
-                Scene newScene = new Scene(root);
-                Stage primaryStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-                primaryStage.setScene(newScene);
-                primaryStage.show();
+                Scene currentScene = authSignInButton.getScene();
+                currentScene.setRoot(root);
             } catch (IOException e) {
                 e.printStackTrace();
                 AlertController.showAlert("Помилка завантаження вікна реєстрації");
@@ -76,8 +69,10 @@ public class AuthorizationController {
                     String hashedPassword = PasswordHashing.getInstance().hashedPassword(loginPassword);
                     if (user.password().equals(hashedPassword)) {
                         AuthenticatedUser.getInstance().setCurrentUser(user);
-                        authSingUpButton.getScene().getWindow().hide();
-                        loadMainMenu();
+                        Stage currentStage = (Stage) authSingUpButton.getScene().getWindow();
+                        boolean isMaximized = currentStage.isMaximized();
+                        currentStage.hide();
+                        loadMainMenu(isMaximized);
                     } else {
                         AlertController.showAlert("Неправильний логін або пароль");
                     }
@@ -90,7 +85,7 @@ public class AuthorizationController {
         });
     }
 
-    private void loadMainMenu() {
+    private void loadMainMenu(boolean isMaximized) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/mainMenu.fxml"));
             Parent root = loader.load();
@@ -103,6 +98,9 @@ public class AuthorizationController {
             }
             stage.setScene(new Scene(root));
             stage.initStyle(StageStyle.UNDECORATED);
+            if (isMaximized) {
+                stage.setMaximized(true);
+            }
             stage.show();
         } catch (IOException e) {
             e.printStackTrace();

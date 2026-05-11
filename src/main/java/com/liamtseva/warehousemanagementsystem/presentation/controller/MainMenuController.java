@@ -26,8 +26,6 @@ public class MainMenuController {
     @FXML
     private Button dashboardButton;
     @FXML
-    private Button warehousesButton;
-    @FXML
     private Button productsButton;
     @FXML
     private Button suppliersButton;
@@ -45,10 +43,7 @@ public class MainMenuController {
     private Button usersButton;
     @FXML
     private Button changeAccountButton;
-    @FXML
-    private Button closeButton;
-    @FXML
-    private Button minimazeButton;
+
 
     @FXML
     private StackPane contentArea;
@@ -63,14 +58,10 @@ public class MainMenuController {
 
     @FXML
     void initialize() {
-        closeButton.setOnAction(event -> System.exit(0));
-        minimazeButton.setOnAction(event -> minimizeWindow());
-        
         // Початкова сторінка
         showDashboardPage();
 
         dashboardButton.setOnAction(event -> showDashboardPage());
-        warehousesButton.setOnAction(event -> showWarehousesPage());
         zonesButton.setOnAction(event -> showZonesPage());
         productsButton.setOnAction(event -> showProductsPage());
         categoriesButton.setOnAction(event -> showCategoriesPage());
@@ -110,15 +101,11 @@ public class MainMenuController {
         loadFXML("/view/dashboard.fxml");
     }
 
-    private void showWarehousesPage() {
-        moveStackPaneIndicator(warehousesButton);
-        loadFXML("/view/warehouses.fxml");
-    }
-
     private void showZonesPage() {
         moveStackPaneIndicator(zonesButton);
         loadFXML("/view/zones.fxml");
     }
+
 
     private void showProductsPage() {
         moveStackPaneIndicator(productsButton);
@@ -175,12 +162,7 @@ public class MainMenuController {
         }
     }
 
-    private void minimizeWindow() {
-        if (stage == null) {
-            stage = (Stage) minimazeButton.getScene().getWindow();
-        }
-        stage.setIconified(true);
-    }
+
 
     private void addDragListeners(Parent root) {
         root.setOnMousePressed(event -> {
@@ -198,6 +180,7 @@ public class MainMenuController {
     private void handleChangeAccountAction() {
         try {
             Stage currentStage = (Stage) changeAccountButton.getScene().getWindow();
+            boolean isMaximized = currentStage.isMaximized();
             FadeTransition fadeOut = new FadeTransition(Duration.millis(500), currentStage.getScene().getRoot());
             fadeOut.setFromValue(1.0);
             fadeOut.setToValue(0.0);
@@ -212,7 +195,10 @@ public class MainMenuController {
                     } catch (Exception ignored) {}
                     
                     loginStage.initStyle(StageStyle.UNDECORATED);
-                    Scene scene = new Scene(root, 900, 550); // Новий розмір
+                    if (isMaximized) {
+                        loginStage.setMaximized(true);
+                    }
+                    Scene scene = new Scene(root, 1000, 690); // Новий розмір
                     scene.getRoot().setOpacity(0.0);
                     loginStage.setScene(scene);
                     loginStage.show();
