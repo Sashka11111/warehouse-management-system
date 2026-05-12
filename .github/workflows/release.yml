@@ -64,7 +64,7 @@ jobs:
             --dest dist/ `
             --win-dir-chooser `
             --win-menu `
-            --win-shortcut
+            --win-shortcut `
             --icon src/main/resources/data/icon.png
 
       - name: Package installer (macOS)
