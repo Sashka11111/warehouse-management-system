@@ -16,6 +16,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -32,10 +33,6 @@ public class MainMenuController {
     @FXML
     private Button inventoryButton;
     @FXML
-    private Button ordersButton;
-    @FXML
-    private Button themesButton;
-    @FXML
     private Button zonesButton;
     @FXML
     private Button categoriesButton;
@@ -44,13 +41,14 @@ public class MainMenuController {
     @FXML
     private Button changeAccountButton;
 
+    @FXML
+    private Label userName;
+
 
     @FXML
     private StackPane contentArea;
     @FXML
     private StackPane stackPane;
-    @FXML
-    private Label userName;
 
     private Stage stage;
     private double xOffset = 0;
@@ -58,7 +56,6 @@ public class MainMenuController {
 
     @FXML
     void initialize() {
-        // Початкова сторінка
         showDashboardPage();
 
         dashboardButton.setOnAction(event -> showDashboardPage());
@@ -67,32 +64,93 @@ public class MainMenuController {
         categoriesButton.setOnAction(event -> showCategoriesPage());
         suppliersButton.setOnAction(event -> showSuppliersPage());
         inventoryButton.setOnAction(event -> showInventoryPage());
-        ordersButton.setOnAction(event -> showOrdersPage());
-        themesButton.setOnAction(event -> showThemesPage());
         usersButton.setOnAction(event -> showUsersPage());
         changeAccountButton.setOnAction(event -> handleChangeAccountAction());
 
         User currentUser = AuthenticatedUser.getInstance().getCurrentUser();
         if (currentUser != null) {
             userName.setText(currentUser.username());
-            // Обмеження доступу для звичайних користувачів
-            if (currentUser.role() != UserRole.ADMIN) {
-                usersButton.setVisible(false);
-            }
+            applyRolePermissions(currentUser.role());
         }
 
         Platform.runLater(() -> {
             if (contentArea.getScene() != null) {
                 Stage primaryStage = (Stage) contentArea.getScene().getWindow();
                 addDragListeners(primaryStage.getScene().getRoot());
+                
+                primaryStage.getScene().widthProperty().addListener((obs, oldVal, newVal) -> {
+                    adjustSidebar(newVal.doubleValue());
+                });
+                adjustSidebar(primaryStage.getScene().getWidth());
             }
         });
     }
 
+    private void adjustSidebar(double width) {
+        AnchorPane root = (AnchorPane) contentArea.getScene().getRoot();
+        AnchorPane sidebar = (AnchorPane) root.getChildren().get(0);
+        
+        if (width < 1000) {
+            sidebar.setPrefWidth(80);
+            collapseButton(dashboardButton);
+            collapseButton(zonesButton);
+            collapseButton(productsButton);
+            collapseButton(categoriesButton);
+            collapseButton(suppliersButton);
+            collapseButton(inventoryButton);
+            collapseButton(usersButton);
+            collapseButton(changeAccountButton);
+            
+            AnchorPane.setLeftAnchor(root.getChildren().get(2), 80.0);
+        } else {
+            sidebar.setPrefWidth(240);
+            expandButton(dashboardButton, "Головна");
+            expandButton(zonesButton, "Зони");
+            expandButton(productsButton, "Товари");
+            expandButton(categoriesButton, "Категорії");
+            expandButton(suppliersButton, "Постачальники");
+            expandButton(inventoryButton, "Складські залишки");
+            expandButton(usersButton, "Користувачі");
+            expandButton(changeAccountButton, "Вихід");
+            
+            AnchorPane.setLeftAnchor(root.getChildren().get(2), 240.0);
+        }
+    }
+
+    private void collapseButton(Button btn) {
+        btn.setText("");
+        btn.setPrefWidth(60);
+    }
+
+    private void expandButton(Button btn, String text) {
+        btn.setText(text);
+        btn.setPrefWidth(220);
+    }
+
+    private void applyRolePermissions(UserRole role) {
+        if (role == UserRole.ADMIN) return;
+
+        if (role == UserRole.MANAGER) {
+            hideMenuButton(usersButton);
+        }
+
+        if (role == UserRole.OPERATOR) {
+            hideMenuButton(usersButton);
+            hideMenuButton(categoriesButton);
+            hideMenuButton(suppliersButton);
+            hideMenuButton(zonesButton);
+        }
+    }
+
+    private void hideMenuButton(Button button) {
+        button.setVisible(false);
+        button.setManaged(false);
+    }
+
     private void moveStackPaneIndicator(Button button) {
-        double buttonY = button.getLayoutY();
+        double buttonY = button.getBoundsInParent().getMinY();
         TranslateTransition transition = new TranslateTransition(Duration.seconds(0.3), stackPane);
-        transition.setToY(buttonY - dashboardButton.getLayoutY()); // Відносно першої кнопки (Dashboard)
+        transition.setToY(buttonY);
         transition.play();
     }
 
@@ -127,15 +185,7 @@ public class MainMenuController {
         loadFXML("/view/inventory.fxml");
     }
 
-    private void showOrdersPage() {
-        moveStackPaneIndicator(ordersButton);
-        loadFXML("/view/orders.fxml");
-    }
 
-    private void showThemesPage() {
-        moveStackPaneIndicator(themesButton);
-        loadFXML("/view/themes.fxml");
-    }
 
     private void showUsersPage() {
         moveStackPaneIndicator(usersButton);
@@ -153,7 +203,6 @@ public class MainMenuController {
             contentArea.getChildren().clear();
             contentArea.getChildren().add(fxml);
         } catch (Exception ex) {
-            // Виводимо повідомлення в консоль та показуємо заглушку в інтерфейсі
             Logger.getLogger(MainMenuController.class.getName()).log(Level.WARNING, "Cannot load FXML: " + fxmlFileName, ex);
             contentArea.getChildren().clear();
             Label placeholder = new Label("Сторінка " + fxmlFileName + " ще не створена");
@@ -198,7 +247,7 @@ public class MainMenuController {
                     if (isMaximized) {
                         loginStage.setMaximized(true);
                     }
-                    Scene scene = new Scene(root, 1000, 690); // Новий розмір
+                    Scene scene = new Scene(root, 1000, 690);
                     scene.getRoot().setOpacity(0.0);
                     loginStage.setScene(scene);
                     loginStage.show();

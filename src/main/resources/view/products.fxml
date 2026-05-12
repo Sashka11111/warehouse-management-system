@@ -1,70 +1,95 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.ComboBox?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.TableColumn?>
-<?import javafx.scene.control.TableView?>
-<?import javafx.scene.control.TextField?>
-<?import javafx.scene.image.Image?>
-<?import javafx.scene.image.ImageView?>
-<?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.HBox?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+<?import org.kordamp.ikonli.javafx.FontIcon?>
 
-<AnchorPane prefHeight="762.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.liamtseva.warehousemanagementsystem.presentation.controller.ProductController">
+<AnchorPane prefHeight="762.0" prefWidth="1000.0" style="-fx-background-color: #f8fafc;" stylesheets="@../design/style.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.liamtseva.warehousemanagementsystem.presentation.controller.ProductController">
   <children>
-    <AnchorPane layoutX="14.0" layoutY="14.0" prefHeight="260.0" prefWidth="972.0" styleClass="form-container" stylesheets="@../design/style.css">
+    <VBox spacing="24.0" AnchorPane.bottomAnchor="24.0" AnchorPane.leftAnchor="24.0" AnchorPane.rightAnchor="24.0" AnchorPane.topAnchor="24.0">
       <children>
-        <Label layoutX="20.0" layoutY="15.0" styleClass="field-label" text="SKU:" />
-        <Label layoutX="20.0" layoutY="55.0" styleClass="field-label" text="Назва:" />
-        <Label layoutX="20.0" layoutY="95.0" styleClass="field-label" text="Категорія:" />
-        <Label layoutX="20.0" layoutY="135.0" styleClass="field-label" text="Постачальник:" />
-        
-        <Label layoutX="500.0" layoutY="15.0" styleClass="field-label" text="Одиниця виміру:" />
-        <Label layoutX="500.0" layoutY="55.0" styleClass="field-label" text="Ціна:" />
-        <Label layoutX="500.0" layoutY="95.0" styleClass="field-label" text="Мін. рівень запасу:" />
+          <HBox alignment="CENTER_LEFT" spacing="16.0">
+          <children>
+            <VBox spacing="4.0">
+              <children>
+                <Label styleClass="section-title" text="Управління товарами" />
+                <Label styleClass="section-subtitle" text="Ведення каталогу товарів, налаштування цін та мінімальних запасів" />
+              </children>
+            </VBox>
+            <Region HBox.hgrow="ALWAYS" />
+            <Button fx:id="addButton" onAction="#openAddDialog" prefHeight="48.0" styleClass="editorial-primary-btn" text="Додати товар" textFill="WHITE">
+                <graphic>
+                    <FontIcon iconColor="WHITE" iconLiteral="fas-plus" />
+                </graphic>
+                <font>
+                    <Font name="Segoe UI Bold" size="14.0" />
+                </font>
+            </Button>
+          </children>
+        </HBox>
 
-        <TextField fx:id="skuField" layoutX="150.0" layoutY="10.0" prefHeight="30.0" prefWidth="250.0" styleClass="textField" />
-        <TextField fx:id="nameField" layoutX="150.0" layoutY="50.0" prefHeight="30.0" prefWidth="250.0" styleClass="textField" />
-        <ComboBox fx:id="categoryComboBox" layoutX="150.0" layoutY="90.0" prefHeight="30.0" prefWidth="250.0" />
-        <ComboBox fx:id="supplierComboBox" layoutX="150.0" layoutY="130.0" prefHeight="30.0" prefWidth="250.0" />
-        
-        <TextField fx:id="unitField" layoutX="650.0" layoutY="10.0" prefHeight="30.0" prefWidth="250.0" styleClass="textField" />
-        <TextField fx:id="priceField" layoutX="650.0" layoutY="50.0" prefHeight="30.0" prefWidth="250.0" styleClass="textField" />
-        <TextField fx:id="minStockField" layoutX="650.0" layoutY="90.0" prefHeight="30.0" prefWidth="250.0" styleClass="textField" />
+          <VBox spacing="20.0" VBox.vgrow="ALWAYS">
+          <children>
+              <VBox spacing="16.0" styleClass="card" VBox.vgrow="ALWAYS">
+              <padding>
+                <Insets bottom="24.0" left="24.0" right="24.0" top="24.0" />
+              </padding>
+              <children>
+                  <HBox spacing="16.0" alignment="CENTER_LEFT">
+                      <children>
+                          <HBox styleClass="table-search-group" HBox.hgrow="ALWAYS">
+                              <children>
+                                  <FontIcon iconColor="#ea580c" iconLiteral="fas-search" iconSize="16" />
+                                  <TextField fx:id="searchField"
+                                             promptText="Пошук за SKU або назвою..."
+                                             HBox.hgrow="ALWAYS"
+                                             styleClass="table-search-field" />
+                                  <Separator orientation="VERTICAL" />
+                                  <ComboBox fx:id="categoryFilter"
+                                            prefWidth="180.0"
+                                            promptText="Всі категорії"
+                                            styleClass="filter-combo-box" />
+                              </children>
+                          </HBox>
+                          <HBox spacing="8.0">
+                              <children>
+                                  <Button fx:id="editButton" onAction="#openEditDialog" prefHeight="42.0" prefWidth="120.0" styleClass="editorial-secondary-btn, btn-secondary-muted" text="Оновити">
+                                      <graphic>
+                                          <FontIcon iconColor="#64748b" iconLiteral="fas-edit" />
+                                      </graphic>
+                                  </Button>
+                                  <Button fx:id="deleteButton" prefHeight="42.0" prefWidth="120.0" styleClass="editorial-secondary-btn, btn-secondary-muted" text="Видалити">
+                                      <graphic>
+                                          <FontIcon iconColor="#64748b" iconLiteral="fas-trash-alt" />
+                                      </graphic>
+                                  </Button>
+                              </children>
+                          </HBox>
+                      </children>
+                  </HBox>
 
-        <Button fx:id="addButton" layoutX="500.0" layoutY="200.0" prefHeight="40.0" prefWidth="110.0" styleClass="side-btn" text="Додати" textFill="WHITE" />
-        <Button fx:id="editButton" layoutX="620.0" layoutY="200.0" prefHeight="40.0" prefWidth="110.0" styleClass="side-btn" text="Редагувати" textFill="WHITE" />
-        <Button fx:id="deleteButton" layoutX="740.0" layoutY="200.0" prefHeight="40.0" prefWidth="110.0" styleClass="side-btn" text="Видалити" textFill="WHITE" />
-        <Button fx:id="clearButton" layoutX="860.0" layoutY="200.0" prefHeight="40.0" prefWidth="100.0" styleClass="side-btn" text="Очистити" textFill="WHITE" />
+                <TableView fx:id="productTable" prefHeight="400.0" styleClass="orders-table, modern-table" VBox.vgrow="ALWAYS">
+                  <columns>
+                    <TableColumn fx:id="skuColumn" prefWidth="100.0" text="SKU" />
+                    <TableColumn fx:id="nameColumn" prefWidth="200.0" text="Назва" />
+                    <TableColumn fx:id="categoryColumn" prefWidth="150.0" text="Категорія" />
+                    <TableColumn fx:id="supplierColumn" prefWidth="150.0" text="Постачальник" />
+                    <TableColumn fx:id="priceColumn" prefWidth="100.0" text="Ціна" />
+                    <TableColumn fx:id="unitColumn" prefWidth="100.0" text="Од. вим." />
+                    <TableColumn fx:id="minStockColumn" prefWidth="120.0" text="Мін. запас" />
+                  </columns>
+                  <columnResizePolicy>
+                    <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                  </columnResizePolicy>
+                </TableView>
+              </children>
+            </VBox>
+          </children>
+        </VBox>
       </children>
-    </AnchorPane>
-
-    <HBox layoutX="100.0" layoutY="290.0" prefHeight="45.0" prefWidth="800.0" styleClass="search-container" stylesheets="@../design/style.css">
-      <children>
-        <TextField fx:id="searchField" prefHeight="35.0" prefWidth="750.0" promptText="Пошук товарів за SKU або назвою..." style="-fx-background-color: transparent;" />
-        <Button mnemonicParsing="false" prefHeight="35.0" prefWidth="40.0" styleClass="search-button">
-          <graphic>
-            <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
-              <image>
-                <Image url="@../data/search.png" />
-              </image>
-            </ImageView>
-          </graphic>
-        </Button>
-      </children>
-    </HBox>
-
-    <TableView fx:id="productTable" layoutX="14.0" layoutY="350.0" prefHeight="390.0" prefWidth="972.0" styleClass="orders-table" stylesheets="@../design/style.css">
-      <columns>
-        <TableColumn fx:id="skuColumn" prefWidth="100.0" text="SKU" />
-        <TableColumn fx:id="nameColumn" prefWidth="200.0" text="Назва" />
-        <TableColumn fx:id="categoryColumn" prefWidth="150.0" text="Категорія" />
-        <TableColumn fx:id="supplierColumn" prefWidth="150.0" text="Постачальник" />
-        <TableColumn fx:id="priceColumn" prefWidth="100.0" text="Ціна" />
-        <TableColumn fx:id="unitColumn" prefWidth="100.0" text="Од. вим." />
-        <TableColumn fx:id="minStockColumn" prefWidth="120.0" text="Мін. запас" />
-      </columns>
-    </TableView>
+    </VBox>
   </children>
 </AnchorPane>
+

@@ -26,11 +26,9 @@ public class TopBarController {
 
     @FXML
     void initialize() {
-        // Handle window drag
         topBarRoot.setOnMousePressed(this::onMousePressed);
         topBarRoot.setOnMouseDragged(this::onMouseDragged);
 
-        // Handle Close
         closeButton.setOnAction(event -> {
             Stage stage = getStage(event.getSource());
             if (stage != null) {
@@ -40,7 +38,6 @@ public class TopBarController {
             }
         });
 
-        // Handle Minimize
         if (minimizeButton != null) {
             minimizeButton.setOnAction(event -> {
                 Stage stage = getStage(event.getSource());
@@ -50,7 +47,6 @@ public class TopBarController {
             });
         }
 
-        // Handle Maximize
         if (maximizeButton != null) {
             maximizeButton.setOnAction(event -> {
                 Stage stage = getStage(event.getSource());

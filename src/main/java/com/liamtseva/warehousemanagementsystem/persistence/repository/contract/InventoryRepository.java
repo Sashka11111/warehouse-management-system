@@ -8,8 +8,6 @@ import java.util.UUID;
 public interface InventoryRepository {
     List<InventoryItem> findAll();
     InventoryItem findById(UUID id) throws EntityNotFoundException;
-    List<InventoryItem> findByProductId(UUID productId);
-    List<InventoryItem> findByZoneId(UUID zoneId);
     InventoryItem create(InventoryItem inventoryItem);
     void update(InventoryItem item) throws EntityNotFoundException;
     void deleteById(UUID id) throws EntityNotFoundException;

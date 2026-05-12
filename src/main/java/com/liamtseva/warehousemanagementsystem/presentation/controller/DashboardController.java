@@ -1,107 +1,141 @@
 package com.liamtseva.warehousemanagementsystem.presentation.controller;
 
+import com.liamtseva.warehousemanagementsystem.domain.security.AuthenticatedUser;
 import com.liamtseva.warehousemanagementsystem.persistence.connection.DatabaseConnection;
-import com.liamtseva.warehousemanagementsystem.persistence.entity.Order;
-import com.liamtseva.warehousemanagementsystem.persistence.repository.contract.OrderRepository;
+import com.liamtseva.warehousemanagementsystem.persistence.entity.InventoryItem;
+import com.liamtseva.warehousemanagementsystem.persistence.entity.Product;
+import com.liamtseva.warehousemanagementsystem.persistence.entity.ProductCategory;
+import com.liamtseva.warehousemanagementsystem.persistence.entity.User;
+import com.liamtseva.warehousemanagementsystem.persistence.entity.Zone;
+import com.liamtseva.warehousemanagementsystem.persistence.repository.contract.InventoryRepository;
+import com.liamtseva.warehousemanagementsystem.persistence.repository.contract.ProductCategoryRepository;
 import com.liamtseva.warehousemanagementsystem.persistence.repository.contract.ProductRepository;
 import com.liamtseva.warehousemanagementsystem.persistence.repository.contract.SupplierRepository;
-import com.liamtseva.warehousemanagementsystem.persistence.repository.contract.WarehouseRepository;
-import com.liamtseva.warehousemanagementsystem.persistence.repository.impl.OrderRepositoryImpl;
+import com.liamtseva.warehousemanagementsystem.persistence.repository.contract.ZoneRepository;
+import com.liamtseva.warehousemanagementsystem.persistence.repository.impl.InventoryRepositoryImpl;
+import com.liamtseva.warehousemanagementsystem.persistence.repository.impl.ProductCategoryRepositoryImpl;
 import com.liamtseva.warehousemanagementsystem.persistence.repository.impl.ProductRepositoryImpl;
 import com.liamtseva.warehousemanagementsystem.persistence.repository.impl.SupplierRepositoryImpl;
-import com.liamtseva.warehousemanagementsystem.persistence.repository.impl.WarehouseRepositoryImpl;
-import java.time.format.DateTimeFormatter;
-import java.util.Comparator;
+import com.liamtseva.warehousemanagementsystem.persistence.repository.impl.ZoneRepositoryImpl;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import javafx.application.Platform;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
+import javafx.scene.control.ProgressBar;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.layout.*;
 
 public class DashboardController {
 
-    @FXML
-    private Label totalWarehousesLabel;
-    @FXML
-    private Label totalProductsLabel;
-    @FXML
-    private Label totalOrdersLabel;
-    @FXML
-    private Label totalSuppliersLabel;
+    @FXML private Label totalProductsLabel;
+    @FXML private Label totalCategoriesLabel;
+    @FXML private Label totalSuppliersLabel;
+    @FXML private Label totalValueLabel;
 
-    @FXML
-    private TableView<Order> recentOrdersTable;
-    @FXML
-    private TableColumn<Order, String> orderNumColumn;
-    @FXML
-    private TableColumn<Order, String> orderDateColumn;
-    @FXML
-    private TableColumn<Order, String> orderTypeColumn;
-    @FXML
-    private TableColumn<Order, String> orderStatusColumn;
-    @FXML
-    private TableColumn<Order, String> orderAmountColumn;
+    @FXML private TableView<LowStockItem> lowStockTable;
+    @FXML private TableColumn<LowStockItem, String> productNameColumn;
+    @FXML private TableColumn<LowStockItem, String> skuColumn;
+    @FXML private TableColumn<LowStockItem, Integer> currentQtyColumn;
+    @FXML private TableColumn<LowStockItem, Integer> minQtyColumn;
+    @FXML private TableColumn<LowStockItem, String> statusColumn;
 
-    private final WarehouseRepository warehouseRepository;
+    @FXML private VBox mainContainer;
+    @FXML private GridPane statsGrid;
+
     private final ProductRepository productRepository;
-    private final OrderRepository orderRepository;
+    private final InventoryRepository inventoryRepository;
     private final SupplierRepository supplierRepository;
+    private final ProductCategoryRepository categoryRepository;
+    private final ZoneRepository zoneRepository;
 
     public DashboardController() {
-        this.warehouseRepository = new WarehouseRepositoryImpl(DatabaseConnection.getInstance().getDataSource());
         this.productRepository = new ProductRepositoryImpl(DatabaseConnection.getInstance().getDataSource());
-        this.orderRepository = new OrderRepositoryImpl(DatabaseConnection.getInstance().getDataSource());
+        this.inventoryRepository = new InventoryRepositoryImpl(DatabaseConnection.getInstance().getDataSource());
         this.supplierRepository = new SupplierRepositoryImpl(DatabaseConnection.getInstance().getDataSource());
+        this.categoryRepository = new ProductCategoryRepositoryImpl(DatabaseConnection.getInstance().getDataSource());
+        this.zoneRepository = new ZoneRepositoryImpl(DatabaseConnection.getInstance().getDataSource());
     }
 
     @FXML
     public void initialize() {
         setupTable();
         loadStatistics();
+        setupResponsiveLayout();
     }
 
+    private void setupResponsiveLayout() {
+        Platform.runLater(() -> {
+            if (mainContainer.getScene() != null) {
+                mainContainer.getScene().widthProperty().addListener((obs, oldVal, newVal) -> {
+                    updateLayout(newVal.doubleValue());
+                });
+                updateLayout(mainContainer.getScene().getWidth());
+            }
+        });
+    }
+
+    private void updateLayout(double width) {
+        if (width < 900) {
+            statsGrid.getColumnConstraints().forEach(c -> c.setPercentWidth(50));
+        } else {
+            statsGrid.getColumnConstraints().forEach(c -> c.setPercentWidth(25));
+        }
+    }
+
+
     private void setupTable() {
-        orderNumColumn.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().orderNumber()));
-        orderDateColumn.setCellValueFactory(data -> new SimpleStringProperty(
-            data.getValue().createdAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"))
-        ));
-        orderTypeColumn.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().type().toString()));
-        orderStatusColumn.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().status().toString()));
-        orderAmountColumn.setCellValueFactory(data -> new SimpleStringProperty(
-            String.format("%.2f", data.getValue().totalAmount())
-        ));
+        productNameColumn.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().name()));
+        skuColumn.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().sku()));
+        currentQtyColumn.setCellValueFactory(data -> new SimpleIntegerProperty(data.getValue().currentQty()).asObject());
+        minQtyColumn.setCellValueFactory(data -> new SimpleIntegerProperty(data.getValue().minQty()).asObject());
+        statusColumn.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().status()));
     }
 
     private void loadStatistics() {
         new Thread(() -> {
             try {
-                List<Order> allOrders = orderRepository.findAll();
-                int warehousesCount = warehouseRepository.findAll().size();
-                int productsCount = productRepository.findAll().size();
+                List<Product> products = productRepository.findAll();
+                List<InventoryItem> inventory = inventoryRepository.findAll();
+                int categoriesCount = categoryRepository.findAll().size();
                 int suppliersCount = supplierRepository.findAll().size();
+                List<Zone> zones = zoneRepository.findAll();
 
-                // Отримуємо 10 останніх замовлень
-                List<Order> recentOrders = allOrders.stream()
-                        .sorted(Comparator.comparing(Order::createdAt).reversed())
-                        .limit(10)
-                        .collect(Collectors.toList());
+                Map<java.util.UUID, Integer> productQuantities = inventory.stream()
+                        .collect(Collectors.groupingBy(InventoryItem::productId,
+                                Collectors.summingInt(InventoryItem::quantity)));
+
+                double totalValue = products.stream()
+                        .mapToDouble(p -> p.price() * productQuantities.getOrDefault(p.productId(), 0))
+                        .sum();
+
+                List<LowStockItem> lowStockItems = new ArrayList<>();
+                for (Product p : products) {
+                    int currentQty = productQuantities.getOrDefault(p.productId(), 0);
+                    if (currentQty <= p.minStockLevel()) {
+                        String status = currentQty == 0 ? "Відсутній" : "Закінчується";
+                        lowStockItems.add(new LowStockItem(p.name(), p.sku(), currentQty, p.minStockLevel(), status));
+                    }
+                }
 
                 Platform.runLater(() -> {
-                    totalWarehousesLabel.setText(String.valueOf(warehousesCount));
-                    totalProductsLabel.setText(String.valueOf(productsCount));
-                    totalOrdersLabel.setText(String.valueOf(allOrders.size()));
+                    totalProductsLabel.setText(String.valueOf(products.size()));
+                    totalCategoriesLabel.setText(String.valueOf(categoriesCount));
                     totalSuppliersLabel.setText(String.valueOf(suppliersCount));
-                    recentOrdersTable.setItems(FXCollections.observableArrayList(recentOrders));
+                    totalValueLabel.setText(String.format("%.2f ₴", totalValue));
+                    lowStockTable.setItems(FXCollections.observableArrayList(lowStockItems));
                 });
             } catch (Exception e) {
-                // Якщо колонка total_amount ще не додана, тут може виникнути помилка
-                // У такому разі просто виведемо її в консоль
                 e.printStackTrace();
             }
         }).start();
     }
+
+    public static record LowStockItem(String name, String sku, int currentQty, int minQty, String status) {}
 }

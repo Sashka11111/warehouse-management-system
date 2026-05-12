@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+<?import org.kordamp.ikonli.javafx.FontIcon?>
+
+<VBox spacing="24.0" styleClass="form-dialog" stylesheets="@../design/style.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.liamtseva.warehousemanagementsystem.presentation.controller.ProductFormController">
+    <padding>
+        <Insets bottom="30.0" left="30.0" right="30.0" top="30.0" />
+    </padding>
+    <children>
+        <HBox alignment="CENTER_LEFT" spacing="16.0">
+            <children>
+                <VBox spacing="4.0">
+                    <children>
+                        <Label fx:id="formTitleLabel" styleClass="section-title" text="Додати товар" />
+                        <Label fx:id="formSubtitleLabel" styleClass="section-subtitle" text="Заповніть специфікації товару" />
+                    </children>
+                </VBox>
+                <Region HBox.hgrow="ALWAYS" />
+                <Button onAction="#handleClose" styleClass="btn-close-minimal">
+                    <graphic>
+                        <FontIcon iconColor="#64748b" iconLiteral="fas-times" iconSize="18" />
+                    </graphic>
+                </Button>
+            </children>
+        </HBox>
+
+        <VBox spacing="20.0" styleClass="card-no-shadow">
+            <children>
+                <GridPane hgap="24.0" vgap="16.0">
+                  <columnConstraints>
+                    <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="350.0" />
+                    <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="350.0" />
+                  </columnConstraints>
+                  <children>
+                    <VBox spacing="8.0">
+                      <children>
+                        <Label styleClass="field-label" text="SKU (Артикул)" />
+                        <HBox styleClass="input-group">
+                          <children>
+                            <FontIcon iconColor="#64748b" iconLiteral="fas-barcode" iconSize="14" />
+                            <TextField fx:id="skuField" prefHeight="48.0" promptText="Наприклад: SKU-001" styleClass="input-field-clean" HBox.hgrow="ALWAYS" />
+                          </children>
+                        </HBox>
+                      </children>
+                    </VBox>
+                    <VBox spacing="8.0" GridPane.columnIndex="1">
+                      <children>
+                        <Label styleClass="field-label" text="Назва товару" />
+                        <HBox styleClass="input-group">
+                          <children>
+                            <FontIcon iconColor="#64748b" iconLiteral="fas-box" iconSize="14" />
+                            <TextField fx:id="nameField" prefHeight="48.0" promptText="Назва товару..." styleClass="input-field-clean" HBox.hgrow="ALWAYS" />
+                          </children>
+                        </HBox>
+                      </children>
+                    </VBox>
+                    <VBox spacing="8.0" GridPane.rowIndex="1">
+                      <children>
+                        <Label styleClass="field-label" text="Категорія" />
+                        <HBox styleClass="input-group">
+                          <children>
+                            <FontIcon iconColor="#64748b" iconLiteral="fas-folder" iconSize="14" />
+                            <ComboBox fx:id="categoryComboBox" maxWidth="1.7976931348623157E308" prefHeight="48.0" promptText="Оберіть категорію..." style="-fx-background-color: transparent; -fx-padding: 0;" HBox.hgrow="ALWAYS" />
+                          </children>
+                        </HBox>
+                      </children>
+                    </VBox>
+                    <VBox spacing="8.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                      <children>
+                        <Label styleClass="field-label" text="Постачальник" />
+                        <HBox styleClass="input-group">
+                          <children>
+                            <FontIcon iconColor="#64748b" iconLiteral="fas-truck" iconSize="14" />
+                            <ComboBox fx:id="supplierComboBox" maxWidth="1.7976931348623157E308" prefHeight="48.0" promptText="Оберіть постачальника..." style="-fx-background-color: transparent; -fx-padding: 0;" HBox.hgrow="ALWAYS" />
+                          </children>
+                        </HBox>
+                      </children>
+                    </VBox>
+                    <VBox spacing="8.0" GridPane.rowIndex="2">
+                      <children>
+                        <Label styleClass="field-label" text="Ціна одиниці" />
+                        <HBox styleClass="input-group">
+                          <children>
+                            <FontIcon iconColor="#64748b" iconLiteral="fas-dollar-sign" iconSize="14" />
+                            <TextField fx:id="priceField" prefHeight="48.0" promptText="0.00" styleClass="input-field-clean" HBox.hgrow="ALWAYS" />
+                          </children>
+                        </HBox>
+                      </children>
+                    </VBox>
+                    <VBox spacing="8.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                      <children>
+                        <Label styleClass="field-label" text="Одиниця виміру" />
+                        <HBox styleClass="input-group">
+                          <children>
+                            <FontIcon iconColor="#64748b" iconLiteral="fas-ruler" iconSize="14" />
+                            <TextField fx:id="unitField" prefHeight="48.0" promptText="шт, кг, м..." styleClass="input-field-clean" HBox.hgrow="ALWAYS" />
+                          </children>
+                        </HBox>
+                      </children>
+                    </VBox>
+                    <VBox spacing="8.0" GridPane.rowIndex="3">
+                      <children>
+                        <Label styleClass="field-label" text="Мін. рівень запасу" />
+                        <HBox styleClass="input-group">
+                          <children>
+                            <FontIcon iconColor="#64748b" iconLiteral="fas-exclamation-triangle" iconSize="14" />
+                            <TextField fx:id="minStockField" prefHeight="48.0" promptText="Порогове значення..." styleClass="input-field-clean" HBox.hgrow="ALWAYS" />
+                          </children>
+                        </HBox>
+                      </children>
+                    </VBox>
+                    <VBox spacing="8.0" GridPane.columnSpan="2" GridPane.rowIndex="4">
+                      <children>
+                        <Label styleClass="field-label" text="Опис товару" />
+                        <TextArea fx:id="descriptionArea" prefHeight="80.0" promptText="Докладний опис товару, основні характеристики та примітки..." styleClass="text-area-clean" wrapText="true" />
+                      </children>
+                    </VBox>
+                  </children>
+                </GridPane>
+            </children>
+        </VBox>
+
+        <HBox alignment="CENTER_RIGHT" spacing="12.0">
+            <children>
+                <Button onAction="#handleClose" prefHeight="48.0" prefWidth="120.0" styleClass="editorial-secondary-btn, btn-secondary-muted" text="Скасувати" />
+                <Button fx:id="saveButton" onAction="#handleSave" prefHeight="48.0" prefWidth="200.0" styleClass="editorial-primary-btn" text="Зберегти товар" textFill="WHITE">
+                    <graphic>
+                        <FontIcon iconColor="WHITE" iconLiteral="fas-check" />
+                    </graphic>
+                    <font>
+                        <Font name="Segoe UI Bold" size="14.0" />
+                    </font>
+                </Button>
+            </children>
+        </HBox>
+    </children>
+</VBox>

@@ -15,7 +15,7 @@ public class ZoneValidator {
         return new ValidationResult(errors.isEmpty(), errors);
     }
 
-    public static ValidationResult isZoneValid(Zone zone) {
+    public static ValidationResult isZoneValid(Zone zone, com.liamtseva.warehousemanagementsystem.persistence.repository.contract.ZoneRepository repository) {
         List<String> errors = new ArrayList<>();
         ValidationResult nameRes = isNameValid(zone.name());
         if (!nameRes.isValid()) errors.addAll(nameRes.getErrors());

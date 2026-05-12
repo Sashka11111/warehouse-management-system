@@ -27,7 +27,6 @@ public class RegistrationController {
     @FXML
     private Button signUpButton;
 
-
     @FXML
     private TextField loginField;
 
@@ -69,7 +68,6 @@ public class RegistrationController {
         String password = passwordField.getText();
         String email = emailField.getText().trim();
 
-        // Повна валідація за допомогою нового валідатора
         ValidationResult usernameRes = UserValidator.isUsernameUnique(username, null, userRepository);
         if (!usernameRes.isValid()) {
             AlertController.showAlert(usernameRes.getErrorMessage());

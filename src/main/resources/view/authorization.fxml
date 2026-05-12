@@ -17,18 +17,15 @@
     
     <StackPane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="40.0">
       <children>
-        <!-- Main Unified Card with Shadow -->
-        <AnchorPane maxHeight="610.0" maxWidth="960.0" prefHeight="610.0" prefWidth="960.0" style="-fx-background-color: #ffffff; -fx-background-radius: 30; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 30, 0, 0, 15);">
+          <AnchorPane maxHeight="610.0" maxWidth="960.0" prefHeight="610.0" prefWidth="960.0" style="-fx-background-color: #ffffff; -fx-background-radius: 30; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 30, 0, 0, 15);">
       <children>
-        <!-- Inner Clipping Container -->
-        <AnchorPane prefHeight="610.0" prefWidth="960.0" style="-fx-background-radius: 30;">
+          <AnchorPane prefHeight="610.0" prefWidth="960.0" style="-fx-background-radius: 30;">
           <clip>
               <Rectangle arcHeight="60.0" arcWidth="60.0" height="610.0" width="960.0" />
           </clip>
           <children>
-          
-            <!-- Left Side: Image Wrapper -->
-            <AnchorPane prefHeight="610.0" prefWidth="500.0">
+
+              <AnchorPane prefHeight="610.0" prefWidth="500.0">
                <clip>
                   <Rectangle height="610.0" width="500.0" />
                </clip>
@@ -38,8 +35,7 @@
                         <Image url="@../data/auth.png" />
                      </image>
                   </ImageView>
-                  <!-- Darker gradient overlay for readability and mood -->
-                  <Rectangle height="610.0" width="500.0" style="-fx-fill: linear-gradient(to bottom, rgba(15,23,42,0.4) 0%, rgba(15,23,42,0.6) 50%, #0f172a 100%);" />
+                   <Rectangle height="610.0" width="500.0" style="-fx-fill: linear-gradient(to bottom, rgba(15,23,42,0.4) 0%, rgba(15,23,42,0.6) 50%, #0f172a 100%);" />
                   
                   <Label layoutX="40.0" layoutY="460.0" text="WAREHOUSE" textFill="WHITE">
                       <font>
@@ -53,9 +49,8 @@
                   </Label>
                </children>
             </AnchorPane>
-            
-            <!-- Right Side: Form -->
-            <AnchorPane layoutX="500.0" prefHeight="610.0" prefWidth="460.0" style="-fx-background-color: #ffffff;">
+
+              <AnchorPane layoutX="500.0" prefHeight="610.0" prefWidth="460.0" style="-fx-background-color: #ffffff;">
               <children>
                 <Label layoutX="70.0" layoutY="80.0" text="Вітаємо!" textFill="#1e293b">
                   <font>

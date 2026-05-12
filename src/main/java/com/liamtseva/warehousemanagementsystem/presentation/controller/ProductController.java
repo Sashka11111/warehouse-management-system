@@ -1,6 +1,8 @@
 package com.liamtseva.warehousemanagementsystem.presentation.controller;
 
+import com.liamtseva.warehousemanagementsystem.domain.security.AuthenticatedUser;
 import com.liamtseva.warehousemanagementsystem.persistence.connection.DatabaseConnection;
+import com.liamtseva.warehousemanagementsystem.persistence.entity.enums.UserRole;
 import com.liamtseva.warehousemanagementsystem.persistence.entity.Product;
 import com.liamtseva.warehousemanagementsystem.persistence.entity.ProductCategory;
 import com.liamtseva.warehousemanagementsystem.persistence.entity.Supplier;
@@ -10,238 +12,218 @@ import com.liamtseva.warehousemanagementsystem.persistence.repository.contract.S
 import com.liamtseva.warehousemanagementsystem.persistence.repository.impl.ProductCategoryRepositoryImpl;
 import com.liamtseva.warehousemanagementsystem.persistence.repository.impl.ProductRepositoryImpl;
 import com.liamtseva.warehousemanagementsystem.persistence.repository.impl.SupplierRepositoryImpl;
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
+
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
+import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
-import javafx.scene.control.*;
-import javafx.util.StringConverter;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
+import javafx.scene.control.Separator;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
+import javafx.scene.layout.VBox;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
 public class ProductController {
 
-    @FXML
-    private TextField skuField;
-    @FXML
-    private TextField nameField;
-    @FXML
-    private ComboBox<ProductCategory> categoryComboBox;
-    @FXML
-    private ComboBox<Supplier> supplierComboBox;
-    @FXML
-    private TextField unitField;
-    @FXML
-    private TextField priceField;
-    @FXML
-    private TextField minStockField;
-    @FXML
-    private TextField searchField;
-    @FXML
-    private TableView<Product> productTable;
-    @FXML
-    private TableColumn<Product, String> skuColumn;
-    @FXML
-    private TableColumn<Product, String> nameColumn;
-    @FXML
-    private TableColumn<Product, String> categoryColumn;
-    @FXML
-    private TableColumn<Product, String> supplierColumn;
-    @FXML
-    private TableColumn<Product, String> priceColumn;
-    @FXML
-    private TableColumn<Product, String> unitColumn;
-    @FXML
-    private TableColumn<Product, String> minStockColumn;
-    @FXML
-    private Button addButton;
-    @FXML
-    private Button editButton;
-    @FXML
-    private Button deleteButton;
-    @FXML
-    private Button clearButton;
+    @FXML private TextField searchField;
+    @FXML private ComboBox<String> categoryFilter;
+    @FXML private Button addButton;
+    @FXML private Button editButton;
+    @FXML private Button deleteButton;
+    @FXML private TableView<Product> productTable;
+    @FXML private TableColumn<Product, String> skuColumn;
+    @FXML private TableColumn<Product, String> nameColumn;
+    @FXML private TableColumn<Product, String> categoryColumn;
+    @FXML private TableColumn<Product, String> supplierColumn;
+    @FXML private TableColumn<Product, Double> priceColumn;
+    @FXML private TableColumn<Product, String> unitColumn;
+    @FXML private TableColumn<Product, Integer> minStockColumn;
 
-    private final ProductRepository productRepository;
+    private final ProductRepository repository;
     private final ProductCategoryRepository categoryRepository;
     private final SupplierRepository supplierRepository;
-
-    private ObservableList<Product> productList;
+    
+    private final ObservableList<Product> productData = FXCollections.observableArrayList();
+    private FilteredList<Product> filteredData;
     private Map<UUID, ProductCategory> categories;
     private Map<UUID, Supplier> suppliers;
     private Product selectedProduct;
 
     public ProductController() {
-        this.productRepository = new ProductRepositoryImpl(DatabaseConnection.getInstance().getDataSource());
+        this.repository = new ProductRepositoryImpl(DatabaseConnection.getInstance().getDataSource());
         this.categoryRepository = new ProductCategoryRepositoryImpl(DatabaseConnection.getInstance().getDataSource());
         this.supplierRepository = new SupplierRepositoryImpl(DatabaseConnection.getInstance().getDataSource());
     }
 
     @FXML
     public void initialize() {
-        loadData();
+        filteredData = new FilteredList<>(productData, p -> true);
+        setupTable();
+        loadProducts();
+        setupListeners();
+        checkPermissions();
+    }
 
+    private void checkPermissions() {
+        com.liamtseva.warehousemanagementsystem.persistence.entity.User currentUser = AuthenticatedUser.getInstance().getCurrentUser();
+        if (currentUser != null && currentUser.role() == UserRole.OPERATOR) {
+            addButton.setVisible(false);
+            addButton.setManaged(false);
+            editButton.setVisible(false);
+            editButton.setManaged(false);
+            deleteButton.setVisible(false);
+            deleteButton.setManaged(false);
+        }
+    }
+
+    private void setupTable() {
         skuColumn.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().sku()));
         nameColumn.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().name()));
         categoryColumn.setCellValueFactory(data -> {
             ProductCategory cat = categories.get(data.getValue().categoryId());
-            return new SimpleStringProperty(cat != null ? cat.categoryName() : "");
+            return new SimpleStringProperty(cat != null ? cat.categoryName() : "Невідомо");
         });
         supplierColumn.setCellValueFactory(data -> {
             Supplier sup = suppliers.get(data.getValue().supplierId());
-            return new SimpleStringProperty(sup != null ? sup.name() : "");
+            return new SimpleStringProperty(sup != null ? sup.name() : "Невідомо");
         });
-        priceColumn.setCellValueFactory(data -> new SimpleStringProperty(String.format("%.2f", data.getValue().price())));
+        priceColumn.setCellValueFactory(data -> new SimpleObjectProperty<>(data.getValue().price()));
         unitColumn.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().unit()));
-        minStockColumn.setCellValueFactory(data -> new SimpleStringProperty(String.valueOf(data.getValue().minStockLevel())));
-
-        setupComboBoxes();
-
-        searchField.textProperty().addListener((obs, oldVal, newVal) -> searchProducts(newVal));
-
-        addButton.setOnAction(event -> addProduct());
-        editButton.setOnAction(event -> editProduct());
-        deleteButton.setOnAction(event -> deleteProduct());
-        clearButton.setOnAction(event -> clearFields());
-
-        productTable.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
-            selectedProduct = newVal;
-            populateFields(newVal);
-        });
+        minStockColumn.setCellValueFactory(data -> new SimpleObjectProperty<>(data.getValue().minStockLevel()));
+        
+        SortedList<Product> sortedData = new SortedList<>(filteredData);
+        sortedData.comparatorProperty().bind(productTable.comparatorProperty());
+        productTable.setItems(sortedData);
+        
+        Label placeholder = new Label("Нічого не знайдено за вашим запитом");
+        placeholder.getStyleClass().add("table-placeholder");
+        productTable.setPlaceholder(placeholder);
     }
 
-    private void loadData() {
-        productList = FXCollections.observableArrayList(productRepository.findAll());
-        productTable.setItems(productList);
-
+    private void loadProducts() {
         categories = categoryRepository.findAll().stream()
-                .collect(Collectors.toMap(ProductCategory::categoryId, c -> c));
+            .collect(Collectors.toMap(ProductCategory::categoryId, c -> c));
         suppliers = supplierRepository.findAll().stream()
-                .collect(Collectors.toMap(Supplier::supplierId, s -> s));
+            .collect(Collectors.toMap(Supplier::supplierId, s -> s));
+        
+        List<Product> products = repository.findAll();
+        productData.setAll(products);
+        
+        ObservableList<String> categoryNames = FXCollections.observableArrayList("Всі категорії");
+        categoryNames.addAll(categories.values().stream()
+            .map(ProductCategory::categoryName)
+            .sorted()
+            .collect(Collectors.toList()));
+        categoryFilter.setItems(categoryNames);
+        categoryFilter.getSelectionModel().selectFirst();
     }
 
-    private void setupComboBoxes() {
-        categoryComboBox.setItems(FXCollections.observableArrayList(categories.values()));
-        categoryComboBox.setConverter(new StringConverter<ProductCategory>() {
-            @Override
-            public String toString(ProductCategory object) {
-                return object == null ? "" : object.categoryName();
-            }
-            @Override
-            public ProductCategory fromString(String string) {
-                return null;
-            }
+    private void setupListeners() {
+        productTable.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
+            selectedProduct = newSelection;
         });
 
-        supplierComboBox.setItems(FXCollections.observableArrayList(suppliers.values()));
-        supplierComboBox.setConverter(new StringConverter<Supplier>() {
-            @Override
-            public String toString(Supplier object) {
-                return object == null ? "" : object.name();
+        searchField.textProperty().addListener((obs, oldText, newText) -> applyFilters());
+        categoryFilter.valueProperty().addListener((obs, oldVal, newVal) -> applyFilters());
+    }
+
+    private void applyFilters() {
+        String searchText = searchField.getText() == null ? "" : searchField.getText().toLowerCase();
+        String selectedCategory = categoryFilter.getValue();
+        
+        filteredData.setPredicate(product -> {
+            boolean matchesText = searchText.isEmpty() ||
+                product.sku().toLowerCase().contains(searchText) ||
+                product.name().toLowerCase().contains(searchText);
+            
+            if (!matchesText) {
+                ProductCategory cat = categories.get(product.categoryId());
+                if (cat != null && cat.categoryName().toLowerCase().contains(searchText)) {
+                    matchesText = true;
+                }
+                Supplier sup = suppliers.get(product.supplierId());
+                if (sup != null && sup.name().toLowerCase().contains(searchText)) {
+                    matchesText = true;
+                }
             }
-            @Override
-            public Supplier fromString(String string) {
-                return null;
-            }
+
+            boolean matchesCategory = selectedCategory == null ||
+                                     selectedCategory.equals("Всі категорії") ||
+                                     categories.get(product.categoryId()).categoryName().equals(selectedCategory);
+
+            return matchesText && matchesCategory;
         });
     }
 
-    private void searchProducts(String text) {
-        if (text == null || text.isEmpty()) {
-            productTable.setItems(productList);
-            return;
-        }
-        String lowerText = text.toLowerCase();
-        List<Product> filtered = productList.stream()
-                .filter(p -> p.name().toLowerCase().contains(lowerText) || p.sku().toLowerCase().contains(lowerText))
-                .collect(Collectors.toList());
-        productTable.setItems(FXCollections.observableArrayList(filtered));
+
+    @FXML
+    private void openAddDialog() {
+        showFormDialog(null);
     }
 
-    private void addProduct() {
-        try {
-            Product product = getProductFromFields(UUID.randomUUID());
-            productRepository.create(product);
-            loadData();
-            clearFields();
-            AlertController.showInfo("Товар успішно додано");
-        } catch (Exception e) {
-            AlertController.showAlert("Помилка при додаванні: " + e.getMessage());
-        }
-    }
-
-    private void editProduct() {
+    @FXML
+    private void openEditDialog() {
         if (selectedProduct == null) {
-            AlertController.showAlert("Виберіть товар для редагування");
+            AlertController.showAlert("Будь ласка, виберіть товар для редагування");
             return;
         }
+        showFormDialog(selectedProduct);
+    }
+
+    private void showFormDialog(Product product) {
         try {
-            Product updated = getProductFromFields(selectedProduct.productId());
-            productRepository.update(updated);
-            loadData();
-            clearFields();
-            AlertController.showInfo("Товар оновлено");
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/product_form.fxml"));
+            VBox root = loader.load();
+            ProductFormController controller = loader.getController();
+
+            Stage stage = new Stage();
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.initStyle(StageStyle.TRANSPARENT);
+            
+            Scene scene = new Scene(root);
+            scene.setFill(javafx.scene.paint.Color.TRANSPARENT);
+            stage.setScene(scene);
+
+            controller.setStage(stage);
+            controller.setProductToEdit(product);
+            controller.setOnSaveCallback(this::loadProducts);
+
+            stage.showAndWait();
         } catch (Exception e) {
-            AlertController.showAlert("Помилка при редагуванні: " + e.getMessage());
+            e.printStackTrace();
+            AlertController.showAlert("Помилка завантаження форми: " + e.toString());
         }
     }
 
+    @FXML
     private void deleteProduct() {
         if (selectedProduct == null) {
-            AlertController.showAlert("Виберіть товар для видалення");
+            AlertController.showAlert("Будь ласка, виберіть товар для видалення");
             return;
         }
+
         try {
-            productRepository.deleteById(selectedProduct.productId());
-            loadData();
-            clearFields();
+            repository.deleteById(selectedProduct.productId());
+            loadProducts();
             AlertController.showInfo("Товар видалено");
         } catch (Exception e) {
             AlertController.showAlert("Помилка при видаленні: " + e.getMessage());
         }
-    }
-
-    private Product getProductFromFields(UUID id) {
-        String sku = skuField.getText().trim();
-        String name = nameField.getText().trim();
-        ProductCategory cat = categoryComboBox.getValue();
-        Supplier sup = supplierComboBox.getValue();
-        String unit = unitField.getText().trim();
-        double price = Double.parseDouble(priceField.getText().trim());
-        int minStock = Integer.parseInt(minStockField.getText().trim());
-
-        if (sku.isEmpty() || name.isEmpty() || cat == null || sup == null) {
-            throw new RuntimeException("Всі обов'язкові поля повинні бути заповнені");
-        }
-
-        return new Product(id, cat.categoryId(), sup.supplierId(), sku, name, "", unit, price, minStock);
-    }
-
-    private void populateFields(Product p) {
-        if (p == null) {
-            clearFields();
-            return;
-        }
-        skuField.setText(p.sku());
-        nameField.setText(p.name());
-        categoryComboBox.setValue(categories.get(p.categoryId()));
-        supplierComboBox.setValue(suppliers.get(p.supplierId()));
-        unitField.setText(p.unit());
-        priceField.setText(String.valueOf(p.price()));
-        minStockField.setText(String.valueOf(p.minStockLevel()));
-    }
-
-    private void clearFields() {
-        skuField.clear();
-        nameField.clear();
-        categoryComboBox.setValue(null);
-        supplierComboBox.setValue(null);
-        unitField.clear();
-        priceField.clear();
-        minStockField.clear();
-        selectedProduct = null;
-        productTable.getSelectionModel().clearSelection();
     }
 }

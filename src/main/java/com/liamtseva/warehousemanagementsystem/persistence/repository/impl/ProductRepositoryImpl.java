@@ -55,42 +55,6 @@ public class ProductRepositoryImpl implements ProductRepository {
     }
 
     @Override
-    public List<Product> findByCategoryId(UUID categoryId) {
-        List<Product> products = new ArrayList<>();
-        String query = "SELECT * FROM Products WHERE category_id = ?";
-        try (Connection connection = dataSource.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-            preparedStatement.setString(1, categoryId.toString());
-            try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                while (resultSet.next()) {
-                    products.add(mapToProduct(resultSet));
-                }
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException("Помилка при отриманні товарів за категорією", e);
-        }
-        return products;
-    }
-
-    @Override
-    public List<Product> findBySupplierId(UUID supplierId) {
-        List<Product> products = new ArrayList<>();
-        String query = "SELECT * FROM Products WHERE supplier_id = ?";
-        try (Connection connection = dataSource.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-            preparedStatement.setString(1, supplierId.toString());
-            try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                while (resultSet.next()) {
-                    products.add(mapToProduct(resultSet));
-                }
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException("Помилка при отриманні товарів за постачальником", e);
-        }
-        return products;
-    }
-
-    @Override
     public List<Product> findAll() {
         List<Product> products = new ArrayList<>();
         String query = "SELECT * FROM Products";

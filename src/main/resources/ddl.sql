@@ -8,7 +8,6 @@ CREATE TABLE Users (
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
-
 DROP TABLE IF EXISTS Zones;
 CREATE TABLE Zones (
     zone_id VARCHAR(36) NOT NULL PRIMARY KEY,
@@ -59,28 +58,3 @@ CREATE TABLE Inventory (
     FOREIGN KEY (zone_id) REFERENCES Zones(zone_id) ON DELETE CASCADE
 );
 
-DROP TABLE IF EXISTS Orders;
-CREATE TABLE Orders (
-    order_id VARCHAR(36) NOT NULL PRIMARY KEY,
-    user_id VARCHAR(36),
-    order_number VARCHAR(50) UNIQUE NOT NULL,
-    type VARCHAR(20) NOT NULL CHECK(type IN ('INBOUND', 'OUTBOUND')),
-    status VARCHAR(20) NOT NULL CHECK(status IN ('PENDING', 'PROCESSING', 'SHIPPED', 'DELIVERED', 'CANCELLED')),
-    total_amount REAL DEFAULT 0.0,
-    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    required_date DATETIME,
-    completed_at DATETIME,
-    notes VARCHAR(255),
-    FOREIGN KEY (user_id) REFERENCES Users(user_id) ON DELETE SET NULL
-);
-
-DROP TABLE IF EXISTS OrderItems;
-CREATE TABLE OrderItems (
-    order_item_id VARCHAR(36) NOT NULL PRIMARY KEY,
-    order_id VARCHAR(36) NOT NULL,
-    product_id VARCHAR(36) NOT NULL,
-    quantity INTEGER NOT NULL CHECK(quantity > 0),
-    unit_price REAL NOT NULL,
-    FOREIGN KEY (order_id) REFERENCES Orders(order_id) ON DELETE CASCADE,
-    FOREIGN KEY (product_id) REFERENCES Products(product_id) ON DELETE CASCADE
-);

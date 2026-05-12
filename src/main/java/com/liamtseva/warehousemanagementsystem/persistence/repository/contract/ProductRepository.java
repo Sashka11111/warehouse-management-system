@@ -9,8 +9,6 @@ public interface ProductRepository {
     List<Product> findAll();
     Product findById(UUID id) throws EntityNotFoundException;
     java.util.Optional<Product> findBySku(String sku);
-    List<Product> findByCategoryId(UUID categoryId);
-    List<Product> findBySupplierId(UUID supplierId);
     Product create(Product product);
 
     void update(Product product) throws EntityNotFoundException;

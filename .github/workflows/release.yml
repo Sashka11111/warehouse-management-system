@@ -1,0 +1,154 @@
+name: Release — Build Installers
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+jobs:
+  build-installers:
+    strategy:
+      matrix:
+        os: [windows-latest, macos-latest, ubuntu-latest]
+    
+    runs-on: ${{ matrix.os }}
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 26
+        uses: actions/setup-java@v4
+        with:
+          java-version: '26'
+          distribution: 'oracle'
+          cache: maven
+
+      - name: Install WiX Toolset (Windows only)
+        if: matrix.os == 'windows-latest'
+        run: |
+          choco install wixtoolset --yes
+
+      - name: Install RPM/DEB packaging tools (Linux only)
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y rpm fakeroot
+
+      - name: Build Fat JAR
+        run: mvn clean package -DskipTests
+
+      - name: Prepare jpackage input
+        shell: bash
+        run: |
+          mkdir -p jpackage-input
+          cp target/warehouse-management-system-*.jar jpackage-input/app.jar
+
+      - name: Extract version from tag
+        id: version
+        shell: bash
+        run: echo "VERSION=${GITHUB_REF_NAME#v}" >> $GITHUB_OUTPUT
+
+      - name: Package installer (Windows)
+        if: matrix.os == 'windows-latest'
+        shell: pwsh
+        run: |
+          jpackage `
+            --type msi `
+            --name "WarehouseManagementSystem" `
+            --app-version "${{ steps.version.outputs.VERSION }}" `
+            --vendor "Liamtseva" `
+            --input jpackage-input/ `
+            --main-jar app.jar `
+            --main-class com.liamtseva.warehousemanagementsystem.Main `
+            --dest dist/ `
+            --win-dir-chooser `
+            --win-menu `
+            --win-shortcut
+            --icon src/main/resources/data/icon.png
+
+      - name: Package installer (macOS)
+        if: matrix.os == 'macos-latest'
+        run: |
+          jpackage \
+            --type dmg \
+            --name "WarehouseManagementSystem" \
+            --app-version "${{ steps.version.outputs.VERSION }}" \
+            --vendor "Liamtseva" \
+            --input jpackage-input/ \
+            --main-jar app.jar \
+            --main-class com.liamtseva.warehousemanagementsystem.Main \
+            --dest dist/
+            --icon src\main\resources\data\icon.png
+
+      - name: Package installer (Linux DEB & RPM)
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          # Створення DEB-пакета для Debian/Ubuntu
+          jpackage \
+            --type deb \
+            --name "warehouse-management-system" \
+            --app-version "${{ steps.version.outputs.VERSION }}" \
+            --vendor "Liamtseva" \
+            --input jpackage-input/ \
+            --main-jar app.jar \
+            --main-class com.liamtseva.warehousemanagementsystem.Main \
+            --dest dist/ \
+            --linux-shortcut
+            --icon src\main\resources\data\icon.png
+
+          jpackage \
+            --type rpm \
+            --name "warehouse-management-system" \
+            --app-version "${{ steps.version.outputs.VERSION }}" \
+            --vendor "Liamtseva" \
+            --input jpackage-input/ \
+            --main-jar app.jar \
+            --main-class com.liamtseva.warehousemanagementsystem.Main \
+            --dest dist/ \
+            --linux-shortcut
+            --icon src\main\resources\data\icon.png
+
+          cp jpackage-input/app.jar dist/warehouse-management-system-fat.jar
+
+      - name: Upload installer artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: installer-${{ matrix.os }}
+          path: dist/
+          retention-days: 1
+
+  publish-release:
+    needs: build-installers
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Download all installer artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: installers/
+          merge-multiple: true
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: "Warehouse Management System ${{ github.ref_name }}"
+          body: |
+            ## Що нового у ${{ github.ref_name }}
+
+            Опис змін цього релізу.
+
+            ## Завантаження
+
+            | Операційна система / Платформа | Файл |
+            |---|---|
+            | Windows 10/11 | `*.msi` |
+            | macOS 12+ | `*.dmg` |
+            | Ubuntu/Debian | `*.deb` |
+            | RedHat/Fedora | `*.rpm` |
+            | Будь-яка (з встановленою JRE) | `*.jar` |
+          files: installers/**
+          draft: true
+          prerelease: false

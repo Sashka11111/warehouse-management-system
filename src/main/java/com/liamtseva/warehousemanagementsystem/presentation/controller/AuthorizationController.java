@@ -43,8 +43,6 @@ public class AuthorizationController {
     @FXML
     void initialize() {
 
-
-        // Перехід до реєстрації
         authSignInButton.setOnAction(event -> {
             try {
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/registration.fxml"));
@@ -57,7 +55,6 @@ public class AuthorizationController {
             }
         });
 
-        // Спроба входу
         authSingUpButton.setOnAction(event -> {
             String loginText = loginTextField.getText().trim();
             String loginPassword = passwordField.getText().trim();
@@ -90,11 +87,9 @@ public class AuthorizationController {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/mainMenu.fxml"));
             Parent root = loader.load();
             Stage stage = new Stage();
-            // Спробуємо додати іконку, якщо вона є
             try {
                 stage.getIcons().add(new Image(getClass().getResourceAsStream("/data/icon.png")));
             } catch (Exception e) {
-                // Ignore if icon not found
             }
             stage.setScene(new Scene(root));
             stage.initStyle(StageStyle.UNDECORATED);

@@ -1,6 +1,8 @@
 package com.liamtseva.warehousemanagementsystem.presentation.controller;
 
+import com.liamtseva.warehousemanagementsystem.domain.security.AuthenticatedUser;
 import com.liamtseva.warehousemanagementsystem.persistence.connection.DatabaseConnection;
+import com.liamtseva.warehousemanagementsystem.persistence.entity.enums.UserRole;
 import com.liamtseva.warehousemanagementsystem.persistence.entity.InventoryItem;
 import com.liamtseva.warehousemanagementsystem.persistence.entity.Product;
 import com.liamtseva.warehousemanagementsystem.persistence.entity.Zone;
@@ -10,187 +12,206 @@ import com.liamtseva.warehousemanagementsystem.persistence.repository.contract.Z
 import com.liamtseva.warehousemanagementsystem.persistence.repository.impl.InventoryRepositoryImpl;
 import com.liamtseva.warehousemanagementsystem.persistence.repository.impl.ProductRepositoryImpl;
 import com.liamtseva.warehousemanagementsystem.persistence.repository.impl.ZoneRepositoryImpl;
+import java.io.IOException;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
+
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
+import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
-import javafx.scene.control.*;
-import javafx.util.StringConverter;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
+import javafx.scene.control.Separator;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
+import javafx.scene.layout.VBox;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
 public class InventoryController {
 
-    @FXML
-    private ComboBox<Product> productComboBox;
-    @FXML
-    private ComboBox<Zone> zoneComboBox;
-    @FXML
-    private TextField quantityField;
-    @FXML
-    private TextField searchField;
-    @FXML
-    private TableView<InventoryItem> inventoryTable;
-    @FXML
-    private TableColumn<InventoryItem, String> productColumn;
-    @FXML
-    private TableColumn<InventoryItem, String> zoneColumn;
-    @FXML
-    private TableColumn<InventoryItem, String> quantityColumn;
-    @FXML
-    private TableColumn<InventoryItem, String> dateColumn;
-    @FXML
-    private Button addButton;
-    @FXML
-    private Button deleteButton;
-    @FXML
-    private Button clearButton;
+    @FXML private TextField searchField;
+    @FXML private ComboBox<String> zoneFilter;
+    @FXML private Button addButton;
+    @FXML private Button editButton;
+    @FXML private Button deleteButton;
+    @FXML private TableView<InventoryItem> inventoryTable;
+    @FXML private TableColumn<InventoryItem, String> productColumn;
+    @FXML private TableColumn<InventoryItem, String> zoneColumn;
+    @FXML private TableColumn<InventoryItem, Integer> quantityColumn;
+    @FXML private TableColumn<InventoryItem, LocalDateTime> lastUpdatedColumn;
 
-    private final InventoryRepository inventoryRepository;
+    private final InventoryRepository repository;
     private final ProductRepository productRepository;
     private final ZoneRepository zoneRepository;
-
-    private ObservableList<InventoryItem> inventoryList;
+    
+    private final ObservableList<InventoryItem> inventoryData = FXCollections.observableArrayList();
+    private FilteredList<InventoryItem> filteredData;
     private Map<UUID, Product> products;
     private Map<UUID, Zone> zones;
-    private InventoryItem selectedItem;
+    private InventoryItem selectedInventory;
 
     public InventoryController() {
-        this.inventoryRepository = new InventoryRepositoryImpl(DatabaseConnection.getInstance().getDataSource());
+        this.repository = new InventoryRepositoryImpl(DatabaseConnection.getInstance().getDataSource());
         this.productRepository = new ProductRepositoryImpl(DatabaseConnection.getInstance().getDataSource());
         this.zoneRepository = new ZoneRepositoryImpl(DatabaseConnection.getInstance().getDataSource());
     }
 
     @FXML
     public void initialize() {
-        loadData();
+        filteredData = new FilteredList<>(inventoryData, p -> true);
+        setupTable();
+        loadInventory();
+        setupListeners();
+        checkPermissions();
+    }
 
+    private void checkPermissions() {
+        com.liamtseva.warehousemanagementsystem.persistence.entity.User currentUser = AuthenticatedUser.getInstance().getCurrentUser();
+        if (currentUser != null && currentUser.role() == UserRole.OPERATOR) {
+            addButton.setVisible(false);
+            addButton.setManaged(false);
+            editButton.setVisible(false);
+            editButton.setManaged(false);
+            deleteButton.setVisible(false);
+            deleteButton.setManaged(false);
+        }
+    }
+
+    private void setupTable() {
         productColumn.setCellValueFactory(data -> {
             Product p = products.get(data.getValue().productId());
-            return new SimpleStringProperty(p != null ? p.name() : "Unknown");
+            return new SimpleStringProperty(p != null ? p.name() : "Невідомо");
         });
         zoneColumn.setCellValueFactory(data -> {
             Zone z = zones.get(data.getValue().zoneId());
-            return new SimpleStringProperty(z != null ? z.name() : "Unknown");
+            return new SimpleStringProperty(z != null ? z.name() : "Невідомо");
         });
-        quantityColumn.setCellValueFactory(data -> new SimpleStringProperty(String.valueOf(data.getValue().quantity())));
-        dateColumn.setCellValueFactory(data -> {
-            if (data.getValue().lastUpdated() != null) {
-                return new SimpleStringProperty(data.getValue().lastUpdated().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")));
-            }
-            return new SimpleStringProperty("");
-        });
-
-        setupComboBoxes();
-
-        searchField.textProperty().addListener((obs, oldVal, newVal) -> searchInventory(newVal));
-
-        addButton.setOnAction(event -> addOrUpdateInventory());
-        deleteButton.setOnAction(event -> deleteInventory());
-        clearButton.setOnAction(event -> clearFields());
-
-        inventoryTable.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
-            selectedItem = newVal;
-            if (newVal != null) {
-                productComboBox.setValue(products.get(newVal.productId()));
-                zoneComboBox.setValue(zones.get(newVal.zoneId()));
-                quantityField.setText(String.valueOf(newVal.quantity()));
-            }
-        });
+        quantityColumn.setCellValueFactory(data -> new SimpleObjectProperty<>(data.getValue().quantity()));
+        lastUpdatedColumn.setCellValueFactory(data -> new SimpleObjectProperty<>(data.getValue().lastUpdated()));
+        
+        SortedList<InventoryItem> sortedData = new SortedList<>(filteredData);
+        sortedData.comparatorProperty().bind(inventoryTable.comparatorProperty());
+        inventoryTable.setItems(sortedData);
+        
+        Label placeholder = new Label("Нічого не знайдено за вашим запитом");
+        placeholder.getStyleClass().add("table-placeholder");
+        inventoryTable.setPlaceholder(placeholder);
     }
 
-    private void loadData() {
-        inventoryList = FXCollections.observableArrayList(inventoryRepository.findAll());
-        inventoryTable.setItems(inventoryList);
-
+    private void loadInventory() {
         products = productRepository.findAll().stream()
-                .collect(Collectors.toMap(Product::productId, p -> p));
+            .collect(Collectors.toMap(Product::productId, p -> p));
         zones = zoneRepository.findAll().stream()
-                .collect(Collectors.toMap(Zone::zoneId, z -> z));
+            .collect(Collectors.toMap(Zone::zoneId, z -> z));
+        
+        List<InventoryItem> inventoryList = repository.findAll();
+        inventoryData.setAll(inventoryList);
+        
+        ObservableList<String> zoneNames = FXCollections.observableArrayList("Всі зони");
+        zoneNames.addAll(zones.values().stream()
+            .map(Zone::name)
+            .sorted()
+            .collect(Collectors.toList()));
+        zoneFilter.setItems(zoneNames);
+        zoneFilter.getSelectionModel().selectFirst();
     }
 
-    private void setupComboBoxes() {
-        productComboBox.setItems(FXCollections.observableArrayList(products.values()));
-        productComboBox.setConverter(new StringConverter<Product>() {
-            @Override public String toString(Product object) { return object == null ? "" : object.name(); }
-            @Override public Product fromString(String string) { return null; }
+    private void setupListeners() {
+        inventoryTable.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
+            selectedInventory = newSelection;
         });
 
-        zoneComboBox.setItems(FXCollections.observableArrayList(zones.values()));
-        zoneComboBox.setConverter(new StringConverter<Zone>() {
-            @Override public String toString(Zone object) { return object == null ? "" : object.name(); }
-            @Override public Zone fromString(String string) { return null; }
+        searchField.textProperty().addListener((obs, oldText, newText) -> applyFilters());
+        zoneFilter.valueProperty().addListener((obs, oldVal, newVal) -> applyFilters());
+    }
+
+    private void applyFilters() {
+        String searchText = searchField.getText() == null ? "" : searchField.getText().toLowerCase();
+        String selectedZone = zoneFilter.getValue();
+        
+        filteredData.setPredicate(item -> {
+            Product p = products.get(item.productId());
+            String productName = p != null ? p.name().toLowerCase() : "";
+            
+            boolean matchesText = searchText.isEmpty() || productName.contains(searchText);
+
+            Zone z = zones.get(item.zoneId());
+            String zoneName = z != null ? z.name() : "";
+            
+            boolean matchesZone = selectedZone == null || 
+                                 selectedZone.equals("Всі зони") ||
+                                 zoneName.equals(selectedZone);
+
+            return matchesText && matchesZone;
         });
     }
 
-    private void searchInventory(String text) {
-        if (text == null || text.isEmpty()) {
-            inventoryTable.setItems(inventoryList);
+
+    @FXML
+    private void openAddDialog() {
+        showFormDialog(null);
+    }
+
+    @FXML
+    private void openEditDialog() {
+        if (selectedInventory == null) {
+            AlertController.showAlert("Будь ласка, виберіть позицію для редагування");
             return;
         }
-        String lowerText = text.toLowerCase();
-        List<InventoryItem> filtered = inventoryList.stream()
-                .filter(item -> {
-                    Product p = products.get(item.productId());
-                    return p != null && p.name().toLowerCase().contains(lowerText);
-                })
-                .collect(Collectors.toList());
-        inventoryTable.setItems(FXCollections.observableArrayList(filtered));
+        showFormDialog(selectedInventory);
     }
 
-    private void addOrUpdateInventory() {
+    private void showFormDialog(InventoryItem inventory) {
         try {
-            Product p = productComboBox.getValue();
-            Zone z = zoneComboBox.getValue();
-            int qty = Integer.parseInt(quantityField.getText().trim());
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/inventory_form.fxml"));
+            VBox root = loader.load();
+            InventoryFormController controller = loader.getController();
 
-            if (p == null || z == null) {
-                AlertController.showAlert("Виберіть товар та зону");
-                return;
-            }
+            Stage stage = new Stage();
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.initStyle(StageStyle.TRANSPARENT);
+            
+            Scene scene = new Scene(root);
+            scene.setFill(javafx.scene.paint.Color.TRANSPARENT);
+            stage.setScene(scene);
 
-            if (selectedItem != null && selectedItem.productId().equals(p.productId()) && selectedItem.zoneId().equals(z.zoneId())) {
-                // Оновлення
-                InventoryItem updated = new InventoryItem(selectedItem.inventoryId(), p.productId(), z.zoneId(), qty, LocalDateTime.now());
-                inventoryRepository.update(updated);
-                AlertController.showInfo("Інвентар оновлено");
-            } else {
-                // Новий запис
-                InventoryItem newItem = new InventoryItem(UUID.randomUUID(), p.productId(), z.zoneId(), qty, LocalDateTime.now());
-                inventoryRepository.create(newItem);
-                AlertController.showInfo("Товар додано до інвентарю");
-            }
-            loadData();
-            clearFields();
+            controller.setStage(stage);
+            controller.setInventoryToEdit(inventory);
+            controller.setOnSaveCallback(this::loadInventory);
+
+            stage.showAndWait();
         } catch (Exception e) {
-            AlertController.showAlert("Помилка: " + e.getMessage());
+            e.printStackTrace();
+            AlertController.showAlert("Помилка завантаження форми: " + e.toString());
         }
     }
 
+    @FXML
     private void deleteInventory() {
-        if (selectedItem == null) {
-            AlertController.showAlert("Виберіть запис для видалення");
+        if (selectedInventory == null) {
+            AlertController.showAlert("Будь ласка, виберіть позицію для видалення");
             return;
         }
+
         try {
-            inventoryRepository.deleteById(selectedItem.inventoryId());
-            loadData();
-            clearFields();
-            AlertController.showInfo("Запис видалено");
+            repository.deleteById(selectedInventory.inventoryId());
+            loadInventory();
+            AlertController.showInfo("Позицію видалено");
         } catch (Exception e) {
             AlertController.showAlert("Помилка при видаленні: " + e.getMessage());
         }
-    }
-
-    private void clearFields() {
-        productComboBox.setValue(null);
-        zoneComboBox.setValue(null);
-        quantityField.clear();
-        selectedItem = null;
-        inventoryTable.getSelectionModel().clearSelection();
     }
 }

@@ -56,7 +56,6 @@ public class AlertController {
     }
 
     public static void showInfo(String message) {
-        // Для простоти використаємо той самий кастомний алерт
         showAlert(message);
     }
 }

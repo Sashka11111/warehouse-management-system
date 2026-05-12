@@ -1,6 +1,5 @@
 package com.liamtseva.warehousemanagementsystem.presentation.validation;
 
-import com.liamtseva.warehousemanagementsystem.persistence.entity.ProductCategory;
 import com.liamtseva.warehousemanagementsystem.persistence.repository.contract.ProductCategoryRepository;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,9 +27,5 @@ public class ProductCategoryValidator {
             }
         });
         return new ValidationResult(errors.isEmpty(), errors);
-    }
-
-    public static ValidationResult isCategoryValid(ProductCategory category, ProductCategoryRepository repository) {
-        return isNameUnique(category.categoryName(), category.categoryId(), repository);
     }
 }

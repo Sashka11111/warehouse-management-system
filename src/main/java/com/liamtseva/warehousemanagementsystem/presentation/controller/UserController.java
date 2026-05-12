@@ -2,145 +2,165 @@ package com.liamtseva.warehousemanagementsystem.presentation.controller;
 
 import com.liamtseva.warehousemanagementsystem.persistence.connection.DatabaseConnection;
 import com.liamtseva.warehousemanagementsystem.persistence.entity.User;
-import com.liamtseva.warehousemanagementsystem.persistence.entity.enums.UserRole;
 import com.liamtseva.warehousemanagementsystem.persistence.repository.contract.UserRepository;
 import com.liamtseva.warehousemanagementsystem.persistence.repository.impl.UserRepositoryImpl;
-import java.time.format.DateTimeFormatter;
+import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.Separator;
+
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
+import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
-import javafx.scene.control.*;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
+import javafx.scene.layout.VBox;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
 public class UserController {
 
-    @FXML
-    private TextField usernameField;
-    @FXML
-    private TextField emailField;
-    @FXML
-    private ComboBox<UserRole> roleComboBox;
-    @FXML
-    private TextField searchField;
-    @FXML
-    private TableView<User> userTable;
-    @FXML
-    private TableColumn<User, String> usernameColumn;
-    @FXML
-    private TableColumn<User, String> emailColumn;
-    @FXML
-    private TableColumn<User, String> roleColumn;
-    @FXML
-    private TableColumn<User, String> dateColumn;
-    @FXML
-    private Button editButton;
-    @FXML
-    private Button deleteButton;
-    @FXML
-    private Button clearButton;
+    @FXML private TextField searchField;
+    @FXML private ComboBox<String> roleFilter;
+    @FXML private Button addButton;
+    @FXML private Button editButton;
+    @FXML private Button deleteButton;
+    @FXML private TableView<User> userTable;
+    @FXML private TableColumn<User, String> usernameColumn;
+    @FXML private TableColumn<User, String> fullNameColumn;
+    @FXML private TableColumn<User, String> roleColumn;
 
-    private final UserRepository userRepository;
-    private ObservableList<User> userList;
+    private final UserRepository repository;
+    private final ObservableList<User> userData = FXCollections.observableArrayList();
+    private FilteredList<User> filteredData;
     private User selectedUser;
 
     public UserController() {
-        this.userRepository = new UserRepositoryImpl(DatabaseConnection.getInstance().getDataSource());
+        this.repository = new UserRepositoryImpl(DatabaseConnection.getInstance().getDataSource());
     }
 
     @FXML
     public void initialize() {
-        usernameColumn.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().username()));
-        emailColumn.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().email()));
-        roleColumn.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().role().toString()));
-        dateColumn.setCellValueFactory(data -> {
-            if (data.getValue().createdAt() != null) {
-                return new SimpleStringProperty(data.getValue().createdAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
-            }
-            return new SimpleStringProperty("");
-        });
-
+        filteredData = new FilteredList<>(userData, p -> true);
+        setupTable();
         loadUsers();
+        setupListeners();
+    }
 
-        roleComboBox.setItems(FXCollections.observableArrayList(UserRole.values()));
+    private void setupTable() {
+        usernameColumn.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().username()));
+        fullNameColumn.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().email()));
+        roleColumn.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().role().toString()));
+        
+        SortedList<User> sortedData = new SortedList<>(filteredData);
+        sortedData.comparatorProperty().bind(userTable.comparatorProperty());
+        userTable.setItems(sortedData);
+        
+        Label placeholder = new Label("Нічого не знайдено за вашим запитом");
+        placeholder.getStyleClass().add("table-placeholder");
+        userTable.setPlaceholder(placeholder);
+    }
+    private void loadUsers() {
+        List<User> users = repository.findAll();
+        userData.setAll(users);
+        
+        ObservableList<String> roles = FXCollections.observableArrayList("Всі ролі");
+        for (var role : com.liamtseva.warehousemanagementsystem.persistence.entity.enums.UserRole.values()) {
+            roles.add(role.toString());
+        }
+        roleFilter.setItems(roles);
+        roleFilter.getSelectionModel().selectFirst();
+    }
 
-        searchField.textProperty().addListener((obs, oldVal, newVal) -> searchUsers(newVal));
+    private void setupListeners() {
+        userTable.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
+            selectedUser = newSelection;
+        });
 
-        editButton.setOnAction(event -> editUser());
-        deleteButton.setOnAction(event -> deleteUser());
-        clearButton.setOnAction(event -> clearFields());
+        searchField.textProperty().addListener((obs, oldText, newText) -> applyFilters());
+        roleFilter.valueProperty().addListener((obs, oldVal, newVal) -> applyFilters());
+    }
 
-        userTable.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
-            selectedUser = newVal;
-            if (newVal != null) {
-                usernameField.setText(newVal.username());
-                emailField.setText(newVal.email());
-                roleComboBox.setValue(newVal.role());
-            }
+    private void applyFilters() {
+        String searchText = searchField.getText() == null ? "" : searchField.getText().toLowerCase();
+        String selectedRole = roleFilter.getValue();
+        
+        filteredData.setPredicate(user -> {
+            boolean matchesText = searchText.isEmpty() ||
+                user.username().toLowerCase().contains(searchText) ||
+                user.email().toLowerCase().contains(searchText);
+
+            boolean matchesRole = selectedRole == null ||
+                                 selectedRole.equals("Всі ролі") ||
+                                 user.role().toString().equals(selectedRole);
+
+            return matchesText && matchesRole;
         });
     }
 
-    private void loadUsers() {
-        userList = FXCollections.observableArrayList(userRepository.findAll());
-        userTable.setItems(userList);
+
+    @FXML
+    private void openAddDialog() {
+        showFormDialog(null);
     }
 
-    private void searchUsers(String text) {
-        if (text == null || text.isEmpty()) {
-            userTable.setItems(userList);
-            return;
-        }
-        String lowerText = text.toLowerCase();
-        List<User> filtered = userList.stream()
-                .filter(u -> u.username().toLowerCase().contains(lowerText) || u.email().toLowerCase().contains(lowerText))
-                .collect(Collectors.toList());
-        userTable.setItems(FXCollections.observableArrayList(filtered));
-    }
-
-    private void editUser() {
+    @FXML
+    private void openEditDialog() {
         if (selectedUser == null) {
-            AlertController.showAlert("Виберіть користувача");
+            AlertController.showAlert("Будь ласка, виберіть користувача для редагування");
             return;
         }
+        showFormDialog(selectedUser);
+    }
+
+    private void showFormDialog(User user) {
         try {
-            User updated = new User(
-                selectedUser.userId(),
-                usernameField.getText().trim(),
-                selectedUser.password(), // Пароль не змінюємо тут
-                roleComboBox.getValue(),
-                emailField.getText().trim(),
-                selectedUser.createdAt()
-            );
-            userRepository.update(updated);
-            loadUsers();
-            clearFields();
-            AlertController.showInfo("Дані користувача оновлено");
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/user_form.fxml"));
+            VBox root = loader.load();
+            UserFormController controller = loader.getController();
+
+            Stage stage = new Stage();
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.initStyle(StageStyle.TRANSPARENT);
+            
+            Scene scene = new Scene(root);
+            scene.setFill(javafx.scene.paint.Color.TRANSPARENT);
+            stage.setScene(scene);
+
+            controller.setStage(stage);
+            controller.setUserToEdit(user);
+            controller.setOnSaveCallback(this::loadUsers);
+
+            stage.showAndWait();
         } catch (Exception e) {
-            AlertController.showAlert("Помилка: " + e.getMessage());
+            e.printStackTrace();
+            AlertController.showAlert("Помилка завантаження форми: " + e.toString());
         }
     }
 
+    @FXML
     private void deleteUser() {
         if (selectedUser == null) {
-            AlertController.showAlert("Виберіть користувача");
+            AlertController.showAlert("Будь ласка, виберіть користувача для видалення");
             return;
         }
+
         try {
-            userRepository.deleteById(selectedUser.userId());
+            repository.deleteById(selectedUser.userId());
             loadUsers();
-            clearFields();
             AlertController.showInfo("Користувача видалено");
         } catch (Exception e) {
-            AlertController.showAlert("Помилка: " + e.getMessage());
+            AlertController.showAlert("Помилка при видаленні: " + e.getMessage());
         }
-    }
-
-    private void clearFields() {
-        usernameField.clear();
-        emailField.clear();
-        roleComboBox.setValue(null);
-        selectedUser = null;
-        userTable.getSelectionModel().clearSelection();
     }
 }

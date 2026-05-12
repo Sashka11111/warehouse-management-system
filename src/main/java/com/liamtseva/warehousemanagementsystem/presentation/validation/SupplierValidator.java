@@ -38,16 +38,28 @@ public class SupplierValidator {
         ValidationResult nameRes = isNameUnique(supplier.name(), supplier.supplierId(), repository);
         if (!nameRes.isValid()) errors.addAll(nameRes.getErrors());
 
+        if (supplier.contactPerson() == null || supplier.contactPerson().trim().isEmpty()) {
+            errors.add("Контактна особа не може бути порожньою");
+        }
+
+        if (supplier.address() == null || supplier.address().trim().isEmpty()) {
+            errors.add("Адреса не може бути порожньою");
+        }
+
         if (supplier.email() != null && !supplier.email().isEmpty()) {
             if (!Pattern.matches(EMAIL_PATTERN, supplier.email())) {
                 errors.add("Некоректний формат email");
             }
+        } else {
+            errors.add("Email не може бути порожнім");
         }
 
         if (supplier.phone() != null && !supplier.phone().isEmpty()) {
             if (!Pattern.matches(PHONE_PATTERN, supplier.phone())) {
-                errors.add("Некоректний формат телефону");
+                errors.add("Некоректний формат телефону (має бути +380...)");
             }
+        } else {
+            errors.add("Телефон не може бути порожнім");
         }
 
         return new ValidationResult(errors.isEmpty(), errors);

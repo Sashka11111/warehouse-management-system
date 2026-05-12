@@ -42,42 +42,6 @@ public class InventoryRepositoryImpl implements InventoryRepository {
     }
 
     @Override
-    public List<InventoryItem> findByProductId(UUID productId) {
-        List<InventoryItem> items = new ArrayList<>();
-        String query = "SELECT * FROM Inventory WHERE product_id = ?";
-        try (Connection connection = dataSource.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-            preparedStatement.setString(1, productId.toString());
-            try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                while (resultSet.next()) {
-                    items.add(mapToInventory(resultSet));
-                }
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException("Помилка при отриманні інвентарю за товаром", e);
-        }
-        return items;
-    }
-
-    @Override
-    public List<InventoryItem> findByZoneId(UUID zoneId) {
-        List<InventoryItem> items = new ArrayList<>();
-        String query = "SELECT * FROM Inventory WHERE zone_id = ?";
-        try (Connection connection = dataSource.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-            preparedStatement.setString(1, zoneId.toString());
-            try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                while (resultSet.next()) {
-                    items.add(mapToInventory(resultSet));
-                }
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException("Помилка при отриманні інвентарю за зоною", e);
-        }
-        return items;
-    }
-
-    @Override
     public List<InventoryItem> findAll() {
         List<InventoryItem> items = new ArrayList<>();
         String query = "SELECT * FROM Inventory";
