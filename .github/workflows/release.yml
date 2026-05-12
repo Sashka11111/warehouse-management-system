@@ -65,7 +65,7 @@ jobs:
             --win-dir-chooser `
             --win-menu `
             --win-shortcut `
-            --icon src/main/resources/data/icon.png
+            --icon src/main/resources/data/icon.ico
 
       - name: Package installer (macOS)
         if: matrix.os == 'macos-latest'
@@ -78,8 +78,8 @@ jobs:
             --input jpackage-input/ \
             --main-jar app.jar \
             --main-class com.liamtseva.warehousemanagementsystem.Main \
-            --dest dist/
-            --icon src\main\resources\data\icon.png
+            --dest dist/ \
+            --icon src/main/resources/data/icon.icns
 
       - name: Package installer (Linux DEB & RPM)
         if: matrix.os == 'ubuntu-latest'
@@ -94,8 +94,8 @@ jobs:
             --main-jar app.jar \
             --main-class com.liamtseva.warehousemanagementsystem.Main \
             --dest dist/ \
-            --linux-shortcut
-            --icon src\main\resources\data\icon.png
+            --linux-shortcut \
+            --icon src/main/resources/data/icon.png  
 
           jpackage \
             --type rpm \
