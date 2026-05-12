@@ -21,7 +21,7 @@ jobs:
         uses: actions/setup-java@v4
         with:
           java-version: '25'
-          distribution: 'oracle'
+          distribution: 'liberica'
           cache: maven
 
       - name: Install WiX Toolset (Windows only)
@@ -62,7 +62,6 @@ jobs:
             --main-jar app.jar `
             --main-class com.liamtseva.warehousemanagementsystem.Main `
             --dest dist/ `
-            --runtime-image $env:JAVA_HOME `
             --win-dir-chooser `
             --win-menu `
             --win-shortcut `
