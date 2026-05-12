@@ -84,7 +84,6 @@ jobs:
       - name: Package installer (Linux DEB & RPM)
         if: matrix.os == 'ubuntu-latest'
         run: |
-          # Створення DEB-пакета для Debian/Ubuntu
           jpackage \
             --type deb \
             --name "warehouse-management-system" \
@@ -95,7 +94,7 @@ jobs:
             --main-class com.liamtseva.warehousemanagementsystem.Main \
             --dest dist/ \
             --linux-shortcut \
-            --icon src/main/resources/data/icon.png  
+            --icon src/main/resources/data/icon.png
 
           jpackage \
             --type rpm \
@@ -106,8 +105,8 @@ jobs:
             --main-jar app.jar \
             --main-class com.liamtseva.warehousemanagementsystem.Main \
             --dest dist/ \
-            --linux-shortcut
-            --icon src\main\resources\data\icon.png
+            --linux-shortcut \
+            --icon src/main/resources/data/icon.png
 
           cp jpackage-input/app.jar dist/warehouse-management-system-fat.jar
 
