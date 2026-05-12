@@ -69,5 +69,5 @@ java -jar target/warehouse-management-system-1.0-SNAPSHOT.jar
 
 ## 🧑‍💻 Розробка та структура коду
 
-- Точка входу в програму: `com.liamtseva.warehousemanagementsystem.Main`
+- Точка входу в програму: `com.liamtseva.warehousemanagementsystem.WarehouseApp`
 - Інтерфейси описуються за допомогою FXML, а стилізація відбувається через сучасні CSS-правила.
