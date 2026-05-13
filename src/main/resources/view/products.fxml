@@ -60,7 +60,7 @@
                                           <FontIcon iconColor="#64748b" iconLiteral="fas-edit" />
                                       </graphic>
                                   </Button>
-                                  <Button fx:id="deleteButton" prefHeight="42.0" prefWidth="120.0" styleClass="editorial-secondary-btn, btn-secondary-muted" text="Видалити">
+                                  <Button fx:id="deleteButton" onAction="#deleteProduct" prefHeight="42.0" prefWidth="120.0" styleClass="editorial-secondary-btn, btn-secondary-muted" text="Видалити">
                                       <graphic>
                                           <FontIcon iconColor="#64748b" iconLiteral="fas-trash-alt" />
                                       </graphic>

@@ -65,7 +65,9 @@ jobs:
             --win-dir-chooser `
             --win-menu `
             --win-shortcut `
-            --icon src/main/resources/data/icon.ico
+            --win-console `
+            --icon src/main/resources/data/icon.ico `
+            --add-modules java.base,java.desktop,java.sql,java.naming,java.xml,jdk.unsupported
 
       - name: Package installer (macOS)
         if: matrix.os == 'macos-latest'
@@ -79,7 +81,8 @@ jobs:
             --main-jar app.jar \
             --main-class com.liamtseva.warehousemanagementsystem.Main \
             --dest dist/ \
-            --icon src/main/resources/data/icon.icns
+            --icon src/main/resources/data/icon.icns \
+            --add-modules java.base,java.desktop,java.sql,java.naming,java.xml,jdk.unsupported
 
       - name: Package installer (Linux DEB & RPM)
         if: matrix.os == 'ubuntu-latest'
@@ -94,7 +97,8 @@ jobs:
             --main-class com.liamtseva.warehousemanagementsystem.Main \
             --dest dist/ \
             --linux-shortcut \
-            --icon src/main/resources/data/icon.png
+            --icon src/main/resources/data/icon.png \
+            --add-modules java.base,java.desktop,java.sql,java.naming,java.xml,jdk.unsupported
 
           jpackage \
             --type rpm \
@@ -106,7 +110,8 @@ jobs:
             --main-class com.liamtseva.warehousemanagementsystem.Main \
             --dest dist/ \
             --linux-shortcut \
-            --icon src/main/resources/data/icon.png
+            --icon src/main/resources/data/icon.png \
+            --add-modules java.base,java.desktop,java.sql,java.naming,java.xml,jdk.unsupported
 
           cp jpackage-input/app.jar dist/warehouse-management-system-fat.jar
 

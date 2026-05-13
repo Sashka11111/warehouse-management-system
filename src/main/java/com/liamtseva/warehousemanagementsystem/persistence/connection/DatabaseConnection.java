@@ -6,9 +6,9 @@ import javax.sql.DataSource;
 
 public class DatabaseConnection {
 
-  private static final String JDBC_URL = "jdbc:sqlite:db/warehouse.sqlite";
-  private static DatabaseConnection instance;
-  private static HikariDataSource dataSource;
+    private static final String JDBC_URL = "jdbc:sqlite:db/warehouse.sqlite";
+    private static DatabaseConnection instance;
+    private static HikariDataSource dataSource;
 
     public DatabaseConnection() {
     }

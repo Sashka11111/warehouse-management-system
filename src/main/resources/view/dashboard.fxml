@@ -20,7 +20,7 @@
                 </VBox>
                 <VBox alignment="CENTER_RIGHT" spacing="4.0">
                    <children>
-                      <Label fx:id="dateLabel" style="-fx-font-family: 'Segoe UI Semibold'; -fx-font-size: 14; -fx-text-fill: #64748b;" text="12 Травня, 2026" />
+                      <Label fx:id="dateLabel" style="-fx-font-family: 'Segoe UI Semibold'; -fx-font-size: 14; -fx-text-fill: #64748b;" />
                    </children>
                 </VBox>
               </children>

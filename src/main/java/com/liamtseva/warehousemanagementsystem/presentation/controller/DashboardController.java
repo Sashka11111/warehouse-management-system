@@ -17,8 +17,12 @@ import com.liamtseva.warehousemanagementsystem.persistence.repository.impl.Produ
 import com.liamtseva.warehousemanagementsystem.persistence.repository.impl.ProductRepositoryImpl;
 import com.liamtseva.warehousemanagementsystem.persistence.repository.impl.SupplierRepositoryImpl;
 import com.liamtseva.warehousemanagementsystem.persistence.repository.impl.ZoneRepositoryImpl;
+
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
 import javafx.application.Platform;
@@ -38,6 +42,7 @@ public class DashboardController {
     @FXML private Label totalCategoriesLabel;
     @FXML private Label totalSuppliersLabel;
     @FXML private Label totalValueLabel;
+    @FXML private Label dateLabel;
 
     @FXML private TableView<LowStockItem> lowStockTable;
     @FXML private TableColumn<LowStockItem, String> productNameColumn;
@@ -68,6 +73,14 @@ public class DashboardController {
         setupTable();
         loadStatistics();
         setupResponsiveLayout();
+        LocalDate currentDate = LocalDate.now();
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(
+                "dd MMMM, yyyy",
+                new Locale("uk", "UA")
+        );
+
+        dateLabel.setText(currentDate.format(formatter));
     }
 
     private void setupResponsiveLayout() {

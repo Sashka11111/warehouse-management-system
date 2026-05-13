@@ -28,7 +28,8 @@
                   <StackPane fx:id="stackPane" prefHeight="45.0" prefWidth="4.0" style="-fx-background-color: #ea580c; -fx-background-radius: 0 4 4 0;" />
                   <VBox layoutX="10.0" spacing="5.0">
                     <children>
-                      <Button fx:id="dashboardButton" graphicTextGap="12.0" mnemonicParsing="false" prefHeight="45.0" prefWidth="220.0" styleClass="menu-button" stylesheets="@../design/style.css" text="Головна">
+                      <Button fx:id="dashboardButton" graphicTextGap="12.0" mnemonicParsing="false" prefHeight="45.0" prefWidth="220.0"
+                              styleClass="menu-button" stylesheets="@../design/style.css" text="Головна">
                         <graphic>
                           <FontIcon iconLiteral="fas-columns" iconSize="18" />
                         </graphic>

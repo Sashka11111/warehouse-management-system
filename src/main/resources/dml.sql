@@ -1,7 +1,7 @@
 INSERT INTO Users (user_id, username, password, role, email) VALUES
     ('a3f1e2d4-5b6c-7d8e-9f0a-1b2c3d4e5f60', 'Admin', '3b612c75a7b5048a435fb6ec81e52ff92d6d795a8b5a9c17070f6a63c97a53b2', 'ADMIN', 'admin@atb-market.com'),
     ('b4e2f3c5-6d7e-8f9a-0b1c-2d3e4f5a6b71', 'Sashka', '32c6b1625a1aae8ba1cbdbb24c20b624ed42ab7389c54c6a5a53d59fff0f2b59', 'MANAGER', 'sashka@atb-market.com'),
-    ('c5d3a4b6-7e8f-9a0b-1c2d-3e4f5a6b7c82', 'Operator_Kiev', '3b612c75a7b5048a435fb6ec81e52ff92d6d795a8b5a9c17070f6a63c97a53b2', 'OPERATOR', 'operator1@atb-market.com');
+    ('c5d3a4b6-7e8f-9a0b-1c2d-3e4f5a6b7c82', 'Operator', '3b612c75a7b5048a435fb6ec81e52ff92d6d795a8b5a9c17070f6a63c97a53b2', 'OPERATOR', 'operator1@atb-market.com');
 
 INSERT INTO Zones (zone_id, name, zone_type) VALUES
     ('d6e4b5c7-8f9a-0b1c-2d3e-4f5a6b7c8d93', 'Холодильна камера (М''ясо/Молоко)', 'COLD'),
