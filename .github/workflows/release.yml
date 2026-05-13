@@ -67,7 +67,8 @@ jobs:
             --win-shortcut `
             --win-console `
             --icon src/main/resources/data/icon.ico `
-            --add-modules java.base,java.desktop,java.sql,java.naming,java.xml,jdk.unsupported
+            --java-options "--enable-native-access=ALL-UNNAMED" `
+            --add-modules java.base,java.desktop,java.sql,java.naming,java.xml,java.scripting,java.management,jdk.unsupported
 
       - name: Package installer (macOS)
         if: matrix.os == 'macos-latest'
@@ -82,7 +83,8 @@ jobs:
             --main-class com.liamtseva.warehousemanagementsystem.Main \
             --dest dist/ \
             --icon src/main/resources/data/icon.icns \
-            --add-modules java.base,java.desktop,java.sql,java.naming,java.xml,jdk.unsupported
+            --java-options "--enable-native-access=ALL-UNNAMED" \
+            --add-modules java.base,java.desktop,java.sql,java.naming,java.xml,java.scripting,java.management,jdk.unsupported
 
       - name: Package installer (Linux DEB & RPM)
         if: matrix.os == 'ubuntu-latest'
@@ -98,7 +100,8 @@ jobs:
             --dest dist/ \
             --linux-shortcut \
             --icon src/main/resources/data/icon.png \
-            --add-modules java.base,java.desktop,java.sql,java.naming,java.xml,jdk.unsupported
+            --java-options "--enable-native-access=ALL-UNNAMED" \
+            --add-modules java.base,java.desktop,java.sql,java.naming,java.xml,java.scripting,java.management,jdk.unsupported
 
           jpackage \
             --type rpm \
@@ -111,7 +114,8 @@ jobs:
             --dest dist/ \
             --linux-shortcut \
             --icon src/main/resources/data/icon.png \
-            --add-modules java.base,java.desktop,java.sql,java.naming,java.xml,jdk.unsupported
+            --java-options "--enable-native-access=ALL-UNNAMED" \
+            --add-modules java.base,java.desktop,java.sql,java.naming,java.xml,java.scripting,java.management,jdk.unsupported
 
           cp jpackage-input/app.jar dist/warehouse-management-system-fat.jar
 
