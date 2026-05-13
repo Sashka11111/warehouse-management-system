@@ -158,5 +158,5 @@ jobs:
             | RedHat/Fedora | `*.rpm` |
             | Будь-яка (з встановленою JRE) | `*.jar` |
           files: installers/**
-          draft: true
+          draft: false
           prerelease: false
