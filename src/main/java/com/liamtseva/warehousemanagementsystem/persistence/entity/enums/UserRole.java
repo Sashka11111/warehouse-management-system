@@ -11,10 +11,6 @@ public enum UserRole {
         this.ukrainianName = ukrainianName;
     }
 
-    public String getUkrainianName() {
-        return ukrainianName;
-    }
-
     @Override
     public String toString() {
         return ukrainianName;

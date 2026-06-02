@@ -12,10 +12,6 @@ public enum ZoneType {
         this.ukrainianName = ukrainianName;
     }
 
-    public String getUkrainianName() {
-        return ukrainianName;
-    }
-
     @Override
     public String toString() {
         return ukrainianName;

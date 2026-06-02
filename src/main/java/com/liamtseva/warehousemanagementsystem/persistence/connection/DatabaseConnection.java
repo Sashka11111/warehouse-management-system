@@ -19,9 +19,6 @@ public class DatabaseConnection {
     private static DatabaseConnection instance;
     private static HikariDataSource dataSource;
 
-    public DatabaseConnection() {
-    }
-
     public static synchronized DatabaseConnection getInstance() {
         if (instance == null) {
             instance = new DatabaseConnection();

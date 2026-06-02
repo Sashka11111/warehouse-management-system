@@ -3,9 +3,6 @@ package com.liamtseva.warehousemanagementsystem.presentation.controller;
 import com.liamtseva.warehousemanagementsystem.domain.security.AuthenticatedUser;
 import com.liamtseva.warehousemanagementsystem.persistence.entity.User;
 import com.liamtseva.warehousemanagementsystem.persistence.entity.enums.UserRole;
-import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javafx.animation.FadeTransition;
 import javafx.animation.TranslateTransition;
 import javafx.application.Platform;
@@ -21,6 +18,10 @@ import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.Duration;
+
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class MainMenuController {
 
@@ -50,10 +51,6 @@ public class MainMenuController {
     @FXML
     private StackPane stackPane;
 
-    private Stage stage;
-    private double xOffset = 0;
-    private double yOffset = 0;
-
     @FXML
     void initialize() {
         showDashboardPage();
@@ -76,7 +73,6 @@ public class MainMenuController {
         Platform.runLater(() -> {
             if (contentArea.getScene() != null) {
                 Stage primaryStage = (Stage) contentArea.getScene().getWindow();
-                addDragListeners(primaryStage.getScene().getRoot());
                 
                 primaryStage.getScene().widthProperty().addListener((obs, oldVal, newVal) -> {
                     adjustSidebar(newVal.doubleValue());
@@ -209,21 +205,6 @@ public class MainMenuController {
             placeholder.setStyle("-fx-font-size: 18px; -fx-text-fill: #2f3479;");
             contentArea.getChildren().add(placeholder);
         }
-    }
-
-
-
-    private void addDragListeners(Parent root) {
-        root.setOnMousePressed(event -> {
-            xOffset = event.getSceneX();
-            yOffset = event.getSceneY();
-        });
-
-        root.setOnMouseDragged(event -> {
-            Stage stage = (Stage) ((Parent) event.getSource()).getScene().getWindow();
-            stage.setX(event.getScreenX() - xOffset);
-            stage.setY(event.getScreenY() - yOffset);
-        });
     }
 
     private void handleChangeAccountAction() {

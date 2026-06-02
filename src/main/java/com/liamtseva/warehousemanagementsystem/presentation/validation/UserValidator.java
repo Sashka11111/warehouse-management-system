@@ -68,13 +68,15 @@ public class UserValidator {
 
     public static ValidationResult isEmailValid(String email) {
         List<String> errors = new ArrayList<>();
-        if (email != null && !email.isEmpty()) {
-            if (email.length() > 100) {
-                errors.add("Email не може перевищувати 100 символів");
-            }
-            if (!Pattern.matches(EMAIL_PATTERN, email)) {
-                errors.add("Некоректний формат email");
-            }
+        if (email == null || email.isEmpty()) {
+            errors.add("Email не може бути порожнім");
+            return new ValidationResult(false, errors);
+        }
+        if (email.length() > 100) {
+            errors.add("Email не може перевищувати 100 символів");
+        }
+        if (!Pattern.matches(EMAIL_PATTERN, email)) {
+            errors.add("Некоректний формат email");
         }
         return new ValidationResult(errors.isEmpty(), errors);
     }
